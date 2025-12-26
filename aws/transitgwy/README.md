@@ -30,6 +30,9 @@
     // password for FortiGate HA configuration
     password = "Foritnet1!"
 
+    // FortiGate VM version to deploy
+    fgt_version = "7.6.5"
+
     // Provide the region and availability zones to deploy the VPC in
     region = "us-west-1"
     availability_zone1 = "us-west-1a"
@@ -38,16 +41,14 @@
     // Provide a keypair for accessing the FortiGate instances
     keypair = "us-west-1"
     ```
+    * 請將 FortiGate 版本更新為 AWS 上支援的最新版本。
+        ```
+        // FortiGate VM version to deploy
+        fgt_version = "7.6.5"
+        ```
 * 將 FortiGate **_license files_** 放置於專案目錄中.
 
-### 修改 variables.tf 參數
-* 請將 FortiGate 版本更新為 AWS 上支援的最新版本。
-    ```
-    // FortiGate VM version to deploy
-    variable "fgt_version" {
-        default = "7.6.5"
-    }
-    ```
+### 修改 variables.tf 參數 (Optional)
 * 授權格式 `license_format` 可選擇以下兩種：
     * **file**: FortiGate-VM License File
     * **token**: FortiFlex Token <br/>

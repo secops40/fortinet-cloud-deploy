@@ -1,4 +1,4 @@
-# Terraform Deployment
+# Infrastructure Deployment
 
 此專案基於 [Fortinet FortiGate Terraform Deploy](https://github.com/fortinet/fortigate-terraform-deploy) 並進行修改。  
 目標是讓使用者能夠直接部署到工作環境，同時實現 **Infrastructure as Code (IaC)** 的特性。

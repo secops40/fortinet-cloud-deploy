@@ -13,6 +13,9 @@ licenses = ["license.lic","license2.lic"]
 // password for FortiGate HA configuration
 password = ""
 
+// FortiGate VM version to deploy
+fgt_version = "7.6.5"
+
 // Provide the region and availability zones to deploy the VPC in
 region = ""
 availability_zone1 = ""
