@@ -50,7 +50,7 @@ resource "aws_iam_instance_profile" "APICall_profile" {
 #
 resource "aws_iam_instance_profile" "fortigate" {
   count = var.bucket ? 1 : 0
-  name  = "fgtiamprofile${random_string.random_name_post.result}"
+  name  = "${var.tag_name_prefix}-fgtiamprofile"
 
   role = aws_iam_role.fortigate[0].name
 }
@@ -60,7 +60,7 @@ resource "aws_iam_instance_profile" "fortigate" {
 #
 resource "aws_iam_role" "fortigate" {
   count = var.bucket ? 1 : 0
-  name  = "fgtiamrole${random_string.random_name_post.result}"
+  name  = "${var.tag_name_prefix}-fgtiamrole"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -129,7 +129,7 @@ EOF
 #
 resource "aws_iam_role_policy" "fortigate-iam_role_policy" {
   count  = var.bucket ? 1 : 0
-  name   = "fgtiamrolepolicy${random_string.random_name_post.result}"
+  name   = "${var.tag_name_prefix}-fgtiamrolepolicy"
   role   = aws_iam_role.fortigate[0].id
   policy = <<EOF
 {

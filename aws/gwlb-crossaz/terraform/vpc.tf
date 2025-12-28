@@ -116,6 +116,6 @@ resource "aws_vpc_endpoint" "s3-endpoint-fgtvm-vpc" {
 }
 POLICY
   tags = {
-    Name = "${var.tag_name_prefix} - fgtvm-endpoint-to-s3"
+    Name = "${var.tag_name_prefix}-fgtvm-endpoint-to-s3"
   }
 }

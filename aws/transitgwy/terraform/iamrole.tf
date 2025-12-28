@@ -2,7 +2,7 @@
 #
 resource "aws_s3_bucket" "s3_bucket" {
   count  = var.bucket ? 1 : 0
-  bucket = "ftnts3boot${random_string.random_name_post.result}"
+  bucket = "${var.tag_name_prefix}-fgt-boot"
 }
 
 # S3 Bucket license file for BYOL License
