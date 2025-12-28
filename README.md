@@ -10,4 +10,5 @@
 目前支援的平台：
  - [aws](./aws/)
     - [AWS Transit Gateway (FortiGate A-P HA)](./aws/transitgwy/)
-    - [AWS GWLB (FortiGate Cross-AZ)](./aws/gwlb-crossaz/)
+    - [AWS GWLB (FortiGate Cross-AZ Centralized North-South Inspection)](./aws/gwlb-crossaz/)
+    - [AWS Transit Gateway + GWLB (FortiGate Cross-AZ Centralized North-South and East-West Inspection)](./aws/gwlb-transit/)

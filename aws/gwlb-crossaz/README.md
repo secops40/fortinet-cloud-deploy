@@ -1,10 +1,10 @@
-# AWS GWLB (FortiGate Cross-AZ)
-Scalable FortiGate Architecture for North–South Traffic using AWS GWLB (Cross-AZ)
+# AWS GWLB (FortiGate Cross-AZ Centralized North-South Inspection)
+A Scalable FortiGate Architecture for North–South Inspection using AWS GWLB (Cross-AZ).
 
 ![](images/aws-gwlb-crossaz.png)
 
 - **使用情境**  
-  * 南北向（N-S）流量檢查。
+  * 南北向 (N-S) 流量檢查。
   * 需要水平擴展 (Horizontal Scaling) 的環境。
 
 - **流量處理**  
@@ -153,7 +153,7 @@ Scalable FortiGate Architecture for North–South Traffic using AWS GWLB (Cross-
 ```
 AppVpc = <AppVpc VpcId>
 FGT1_Password = <FortiGate1 Password>
-FGT1_PublicIP = <FortiGate2 Public IP>
+FGT1_PublicIP = <FortiGate1 Public IP>
 FGT2_Password = <FortiGate2 Password>
 FGT2_PublicIP = <FortiGate2 Public IP>
 GWLB_Endpoint_Service = <GWLB Endpoint Service Name>

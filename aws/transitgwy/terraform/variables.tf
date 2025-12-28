@@ -18,10 +18,10 @@ variable "tag_name_prefix" {
   default     = "TGW"
 }
 
-variable "tag_name_unique" {
-  description = "Provide a unique tag prefix value that will be used in the name tag for each modules resources"
-  default     = "terraform"
-}
+#variable "tag_name_unique" {
+#  description = "Provide a unique tag prefix value that will be used in the name tag for each modules resources"
+#  default     = "terraform"
+#}
 
 //license files for the two fgts
 variable "licenses" {
@@ -180,14 +180,14 @@ variable "security_vpc_heartbeat_subnet_cidr2" {
   default     = "10.0.30.0/24"
 }
 
-#### relay subnets
+#### transit subnets
 variable "security_vpc_relay_subnet_cidr1" {
-  description = "Provide the network CIDR for the relay subnet1 in security vpc"
+  description = "Provide the network CIDR for the transit subnet1 in security vpc"
   default     = "10.0.101.0/24"
 }
 
 variable "security_vpc_relay_subnet_cidr2" {
-  description = "Provide the network CIDR for the relay subnet2 in security vpc"
+  description = "Provide the network CIDR for the transit subnet2 in security vpc"
   default     = "10.0.102.0/24"
 }
 

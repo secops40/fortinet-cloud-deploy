@@ -315,7 +315,7 @@ resource "aws_instance" "fgt1" {
   }
 
   tags = {
-    Name = "${var.tag_name_prefix}-${var.tag_name_unique}-fgt1"
+    Name = "${var.tag_name_prefix}-fgt1"
   }
 }
 
@@ -384,7 +384,7 @@ resource "aws_instance" "fgt2" {
   }
 
   tags = {
-    Name = "${var.tag_name_prefix}-${var.tag_name_unique}-fgt2"
+    Name = "${var.tag_name_prefix}-fgt2"
   }
 }
 
