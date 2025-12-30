@@ -1,16 +1,18 @@
-# AWS GWLB (FortiGate Cross-AZ Centralized North-South Inspection)
-A Scalable FortiGate Architecture for North–South Inspection using AWS GWLB (Cross-AZ).
+# AWS GWLB (FortiGate Single-AZ Centralized North-South Inspection)
+A simplified FortiGate architecture for North–South traffic inspection using AWS Gateway Load Balancer (GWLB) in a Single Availability Zone deployment.
 
-![](images/aws-gwlb-crossaz.png)
+![](images/aws-gwlb.png)
 
 - **使用情境**  
   * 南北向 (N-S) 流量檢查。
+  * 不需要跨 AZ 高可用（HA）的環境。
+  * PoC、測試環境，或對成本與架構簡化有需求的生產環境。
   * 需要水平擴展 (Horizontal Scaling) 的環境。
 
 - **流量處理**  
   * **Ingress（進站流量）**: 
       * Internet 流量進入 Service VPC。
-      * 流量被導向 GWLB Endpoint。
+      * 流量被導向 Single-AZ GWLB Endpoint。
       * GWLB 將流量轉送至 FortiGate，FortiGate 透過 GENEVE 介面進行安全檢查後，將流量送回 GWLB。
       * GWLB 再將流量轉送至 Service Subnet 內的 Server。  
   * **Egress（出站流量）**:
@@ -19,29 +21,29 @@ A Scalable FortiGate Architecture for North–South Inspection using AWS GWLB (C
       * FortiGate 經由 GENEVE 介面檢查後，回送至 GWLB。
       * 流量最終由 GWLB 出口送往 Internet。
 
-- **架構特點**  
-  * 高度可擴展: 透過增加 FortiGate VM 即可水平擴充處理容量。
-  * 流量經過 GWLB 分散至多個 AZ，確保高可用性 (HA)。
-  * 使用 **GENEVE** 封裝技術，在雲端環境中保留完整流量內容，方便 FortiGate 進行檢查。
-  * 手動擴展，無需 SNAT。
-  * **不支援 Session Failover**  
+- **架構特點**
+* 架構簡化
+   * 僅部署於單一 Availability Zone，降低設計與維運複雜度。
+   * 適合測試或不要求跨 AZ 容錯的場景。
+* 可水平擴展
+   * 可在同一 AZ 中新增 FortiGate，透過 GWLB 自動分流。
+   * 無需調整應用端路由即可擴展處理能力。
+* GENEVE 封裝
+   * 使用 GENEVE 技術保留完整封包資訊（原始 IP、Port）。
+   * FortiGate 可進行完整 L4–L7 安全檢查。
+* 無需 SNAT
+   * 流量原始來源 IP 得以保留，方便稽核與安全政策設計。
+* 手動擴展
+   * FortiGate 數量需由管理者手動調整。
+   * 未整合 Auto Scaling Group（ASG）。
+* 高可用性限制
+   * 僅限單一 AZ，不具備跨 AZ HA 能力。
+   * 不支援 Session Failover。
+   * AZ 發生故障時，整體流量將中斷。
 
 - **工具**  
   * 本部署使用 **_Terraform_** 工具
-<br/><br/>
-## AWS GWLB 防火牆故障情境與跨區域負載平衡影響分析表
 
-| 故障情境 | 跨區域負載平衡 (Cross-zone LB) | 現有流量 (Existing flows) | 新流量 (New flows) |
-| :--- | :--- | :--- | :--- |
-| **可用區域 (AZ) 內其中一台 FW 故障** | 已停用 (Disabled) | 連線超時或需要客戶端重置 | 發送至同一 AZ 內其餘健康的目標 |
-| **可用區域 (AZ) 內其中一台 FW 故障** | 已啟用 (Enabled) | 連線超時或需要客戶端重置 | 發送至同一 AZ 或跨 AZ 的健康目標 |
-| **可用區域 (AZ) 內所有 FW 皆故障** | 已停用 (Disabled) | 連線超時或掉包，直到至少一台目標恢復 | 連線超時或掉包，直到至少一台目標恢復 |
-| **可用區域 (AZ) 內所有 FW 皆故障** | 已啟用 (Enabled) | 連線超時或需要客戶端重置 | 發送至跨 AZ 的健康目標 |
-| **AWS 區域內其中一個 AZ 發生故障** | 已停用或已啟用 | 經過其他 AZ 的流量不受影響 | 經過其他 AZ 的流量不受影響 |
-* **跨區域負載平衡的價值**：當某個 AZ 內的防火牆全數失效時，開啟 **Cross-zone Load Balancing** 是維持業務連續性的關鍵，它能將流量導向其他 AZ 的健康防火牆。
-* **現有流量的特性**：無論是否開啟跨區域功能，一旦負責該連線的防火牆實體故障，現有的狀態連線（Stateful flows）通常都會中斷並需要重置。
-* **AZ 級別故障**：GWLB 的設計確保了區域級的隔離性，單一 AZ 的完全失效不會影響到其他正常運作的 AZ 流量路徑。
-<br/><br/>
 ---
 
 ## 設定
@@ -57,7 +59,7 @@ A Scalable FortiGate Architecture for North–South Inspection using AWS GWLB (C
 
    // Provide the license type for FortiGate-VM Instances, either byol or payg
    license_type = "byol"
-   licenses = ["license1.lic","license2.lic"]
+   licenses = ["license1.lic",""]
 
    // FortiGate VM version to deploy
    fgt_version = "7.6.5"
@@ -78,9 +80,9 @@ A Scalable FortiGate Architecture for North–South Inspection using AWS GWLB (C
       // FortiGate VM version to deploy
       fgt_version = "7.6.5"
       ```
-   * 若不建 spokeVpc
+   * 若不建 Spoke Vpc
       ```
-      // Create AppVpc
+      // Create SpokeVpc
       spokeVpc = "false"
       ```
 * 將 FortiGate **_license files_** 放置於專案目錄中.
@@ -148,8 +150,8 @@ A Scalable FortiGate Architecture for North–South Inspection using AWS GWLB (C
    ```
 * 編輯 `variables.tf`
     ```
-    #variable "access_key" {}
-    #variable "secret_key" {}
+    //variable "access_key" {}
+    //variable "secret_key" {}
     ```
 
 ## Terraform 部署
@@ -173,11 +175,8 @@ A Scalable FortiGate Architecture for North–South Inspection using AWS GWLB (C
 ```
 FGT1_Password = <FortiGate1 Password>
 FGT1_PublicIP = <FortiGate1 Public IP>
-FGT2_Password = <FortiGate2 Password>
-FGT2_PublicIP = <FortiGate2 Public IP>
 GWLB_Endpoint_Service = <GWLB Endpoint Service Name>
 GWLB_PrivateIP-az1 = <GWLB Endpoint1 IP>
-GWLB_PrivateIP-az2 = <GWLB Endpoint2 IP>
 SecVpc = <SecVpc VpcId>
 SpokeVpc = <SpokeVpc VpcId>
 Username = "admin"
@@ -188,43 +187,35 @@ Username = "admin"
 > 以上圖中 **Spoke Vpc** 為例，將 Spoke Vpc 的 North–South 流量導向 GWLB 進行 FortiGate 安全檢測 (Security Inspection)。
 
 ### Gateway Load Balancer Endpoints（GWLBe）
-於 Spoke Vpc **每個 AZ** 中建立一個 GWLB Endpoint:
+於 Spoke Vpc 建立一個 GWLB Endpoint:
 - 至 VPC - PrivateLink and Lattice - Endpoints
-- Create endpoint - "GWLB-CROSSAZ-gwlb-Spoke-az1"
+- Create endpoint - "GWLB-gwlb-Spoke-az1"
    * Service name: `<GWLB_Endpoint_Service>`
    * Vpc: `<SpokeVpc>`
-   * Subnet: `<Spoke - Public Subnet1>`
-- Create endpoint - "GWLB-CROSSAZ-gwlb-Spoke-az2"
-   * Service name: `<GWLB_Endpoint_Service>`
-   * Vpc: `<SpokeVpc>`
-   * Subnet: `<Spoke - Public Subnet2>`
+   * Subnet: `<Spoke - GWLBe Subnet1>`
 ### VPC Route Tables
 1. 修改 Spoke Vpc Service Route Table
-   ![](./images/ServiceRoute.png)
-   * Service Subnet1 Route Table:
+   ![](./images/GWLB-Spoke-service-rt.png)
+   * Service Route Table:
       * Routes: 
          * `0.0.0.0/0` → 指向 `Gateway Load Balancer Endpoint - az1`
       * Subnet associations
          * Service Subnet1
-   * Service Subnet2 Route Table:
-      * Routes: 
-         * `0.0.0.0/0` → 指向 `Gateway Load Balancer Endpoint - az2`
-      * Subnet associations
          * Service Subnet2
 1. Spoke Vpc Public Subnet Route Table
    * 建立 Ingress Route Table:
       * Routes 
-         ![](./images/Spoke-public-ingress-rt.png)
+         ![](./images/GWLB-Spoke-public-ingress-rt.png)
          * `10.1.0.0/16` → 指向 `local`
          * `10.1.1.0/24` → 指向 `Gateway Load Balancer Endpoint - az1`
-         * `10.1.11.0/24` → 指向 `Gateway Load Balancer Endpoint - az2`
+         * `10.1.11.0/24` → 指向 `Gateway Load Balancer Endpoint - az1`
       * Edge assciations:
+         ![](./images/GWLB-Spoke-public-ingress-rt_edge.png)
          * `igw-id`
-            ![](./images/Spoke-public-ingress-rt_edge.png)
       * Subnet associations: **_不用設_**
    * Engress Route Table:
-      ![](./images/Spoke-public-egress-rt.png)
       * Routes 
+         ![](./images/GWLB-Spoke-public-egress-rt.png)
          * `0.0.0.0` → 指向 `igw-id`
       * Subnet associations:
          * Public Subnet1
@@ -248,8 +239,7 @@ Username = "admin"
 > ⚠️ 注意：此動作會刪除所有由 Terraform 管理的資源，請務必確認無其他服務依賴。
 ## 先刪除 Gateway Load Balancer Endpoints (GWLBe) 
 在執行 `terraform destroy` 前，必須先刪除手動建立的的資源: 
-1. GWLB-CROSSAZ-gwlb-Spoke-az1
-2. GWLB-CROSSAZ-gwlb-Spoke-az2
+1. GWLB-gwlb-Spoke-az1
 
 ## 執行 Terraform Destroy
 1. 初始化 Terraform (如尚未初始化)

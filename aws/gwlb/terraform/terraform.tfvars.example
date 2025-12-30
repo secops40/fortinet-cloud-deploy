@@ -7,7 +7,7 @@ secret_key = "<AWS secret key>"
 
 // Provide the license type for FortiGate-VM Instances, either byol or payg
 license_type = "byol"
-licenses = ["license1.lic","license2.lic"]
+licenses = ["license1.lic",""]
 
 // FortiGate VM version to deploy
 fgt_version = "7.6.5"

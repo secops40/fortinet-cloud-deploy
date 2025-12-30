@@ -8,7 +8,8 @@
 本專案提供自動化腳本，讓使用者可以快速開始在不同雲端平台部署 Fortinet 相關資源。
 
 目前支援的平台：
- - [aws](./aws/)
-    - [AWS Transit Gateway (FortiGate A-P HA)](./aws/transitgwy/)
-    - [AWS GWLB (FortiGate Cross-AZ Centralized North-South Inspection)](./aws/gwlb-crossaz/)
-    - [AWS Transit Gateway + GWLB (FortiGate Cross-AZ Centralized North-South and East-West Inspection)](./aws/gwlb-transit/)
+- [aws](./aws/)
+   - [AWS Transit Gateway (FortiGate A-P HA)](./aws/transitgwy/)
+   - [AWS GWLB (FortiGate Single-AZ Centralized North-South Inspection)](./aws/gwlb/)
+   - [AWS GWLB (FortiGate Cross-AZ Centralized North-South Inspection)](./aws/gwlb-crossaz/)
+   - [AWS Transit Gateway + GWLB (FortiGate Cross-AZ Centralized North-South and East-West Inspection)](./aws/gwlb-transit/)

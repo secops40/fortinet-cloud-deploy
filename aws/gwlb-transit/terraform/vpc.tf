@@ -98,7 +98,7 @@ resource "aws_subnet" "cspublicsubnetaz1" {
   cidr_block        = var.cspubliccidraz1
   availability_zone = var.availability_zone1
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke1-GWLBe-az1"
+    Name = "${var.tag_name_prefix}-Spoke1-Public-az1"
   }
 }
 
@@ -108,7 +108,7 @@ resource "aws_subnet" "csprivatesubnetaz1" {
   cidr_block        = var.csprivatecidraz1
   availability_zone = var.availability_zone1
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke1-App-az1"
+    Name = "${var.tag_name_prefix}-Spoke1-Service-az1"
   }
 }
 
@@ -118,7 +118,7 @@ resource "aws_subnet" "cspublicsubnetaz2" {
   cidr_block        = var.cspubliccidraz2
   availability_zone = var.availability_zone2
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke1-GWLBe-az2"
+    Name = "${var.tag_name_prefix}-Spoke1-Public-az2"
   }
 }
 
@@ -128,7 +128,7 @@ resource "aws_subnet" "csprivatesubnetaz2" {
   cidr_block        = var.csprivatecidraz2
   availability_zone = var.availability_zone2
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke1-App-az2"
+    Name = "${var.tag_name_prefix}-Spoke1-Service-az2"
   }
 }
 
@@ -151,7 +151,7 @@ resource "aws_subnet" "cs2publicsubnetaz1" {
   cidr_block        = var.cs2publiccidraz1
   availability_zone = var.availability_zone1
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke2-GWLBe-az1"
+    Name = "${var.tag_name_prefix}-Spoke2-Public-az1"
   }
 }
 
@@ -161,7 +161,7 @@ resource "aws_subnet" "cs2privatesubnetaz1" {
   cidr_block        = var.cs2privatecidraz1
   availability_zone = var.availability_zone1
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke2-App-az1"
+    Name = "${var.tag_name_prefix}-Spoke2-Service-az1"
   }
 }
 
@@ -171,7 +171,7 @@ resource "aws_subnet" "cs2publicsubnetaz2" {
   cidr_block        = var.cs2publiccidraz2
   availability_zone = var.availability_zone2
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke2-GWLBe-az2"
+    Name = "${var.tag_name_prefix}-Spoke2-Public-az2"
   }
 }
 
@@ -181,7 +181,7 @@ resource "aws_subnet" "cs2privatesubnetaz2" {
   cidr_block        = var.cs2privatecidraz2
   availability_zone = var.availability_zone2
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke2-Appe-az2"
+    Name = "${var.tag_name_prefix}-Spoke2-Service-az2"
   }
 }
 

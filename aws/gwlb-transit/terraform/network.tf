@@ -175,7 +175,7 @@ resource "aws_route_table" "cspublicrt" {
   vpc_id = aws_vpc.customer-vpc[count.index].id
 
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke1-gwlbe-ingress-rt"
+    Name = "${var.tag_name_prefix}-Spoke1-public-ingress-rt"
   }
 }
 
@@ -184,7 +184,7 @@ resource "aws_route_table" "cspublicrt2" {
   vpc_id = aws_vpc.customer-vpc[count.index].id
 
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke1-gwlbe-egress-rt"
+    Name = "${var.tag_name_prefix}-Spoke1-public-egress-rt"
   }
 }
 
@@ -194,7 +194,7 @@ resource "aws_route_table" "csprivatert" {
   vpc_id     = aws_vpc.customer-vpc[count.index].id
 
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke1-app1-rt"
+    Name = "${var.tag_name_prefix}-Spoke1-service1-rt"
   }
 }
 
@@ -204,7 +204,7 @@ resource "aws_route_table" "csprivatert2" {
   vpc_id     = aws_vpc.customer-vpc[count.index].id
 
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke1-app2-rt"
+    Name = "${var.tag_name_prefix}-Spoke1-service2-rt"
   }
 }
 
@@ -214,7 +214,7 @@ resource "aws_route_table" "cs2publicrt" {
   vpc_id = aws_vpc.customer2-vpc[count.index].id
 
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke2-gwlbe-ingress-rt"
+    Name = "${var.tag_name_prefix}-Spoke2-public-ingress-rt"
   }
 }
 
@@ -223,7 +223,7 @@ resource "aws_route_table" "cs2publicrt2" {
   vpc_id = aws_vpc.customer2-vpc[count.index].id
 
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke2-gwlbe-egress-rt"
+    Name = "${var.tag_name_prefix}-Spoke2-public-egress-rt"
   }
 }
 
@@ -233,7 +233,7 @@ resource "aws_route_table" "cs2privatert" {
   vpc_id     = aws_vpc.customer2-vpc[count.index].id
 
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke2-app1-rt"
+    Name = "${var.tag_name_prefix}-Spoke2-service1-rt"
   }
 }
 
@@ -243,7 +243,7 @@ resource "aws_route_table" "cs2privatert2" {
   vpc_id     = aws_vpc.customer2-vpc[count.index].id
 
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke2-app2-rt"
+    Name = "${var.tag_name_prefix}-Spoke2-service2-rt"
   }
 }
 
@@ -513,7 +513,7 @@ resource "aws_security_group" "allow_all" {
 
 //  Gateway Load Balancer on FGT VPC to single FGT
 resource "aws_lb" "gateway_lb" {
-  name                             = "${var.tag_name_prefix}"
+  name                             = "${var.tag_name_prefix}-gwlb"
   load_balancer_type               = "gateway"
   enable_cross_zone_load_balancing = true
 
@@ -569,7 +569,7 @@ resource "aws_vpc_endpoint_service" "fgtgwlbservice" {
   acceptance_required        = false
   gateway_load_balancer_arns = [aws_lb.gateway_lb.arn]
   tags = {
-    Name = "${var.tag_name_prefix}"
+    Name = "${var.tag_name_prefix}-gwlb"
   }
 }
 
@@ -580,7 +580,7 @@ resource "aws_vpc_endpoint" "gwlbendpointfgt" {
   vpc_endpoint_type = aws_vpc_endpoint_service.fgtgwlbservice.service_type
   vpc_id            = aws_vpc.fgtvm-vpc.id
   tags = {
-    Name = "${var.tag_name_prefix}-Sec-az1"
+    Name = "${var.tag_name_prefix}-gwlb-Sec-az1"
   }
 }
 resource "aws_vpc_endpoint" "gwlbendpointfgt2" {
@@ -589,7 +589,7 @@ resource "aws_vpc_endpoint" "gwlbendpointfgt2" {
   vpc_endpoint_type = aws_vpc_endpoint_service.fgtgwlbservice.service_type
   vpc_id            = aws_vpc.fgtvm-vpc.id
   tags = {
-    Name = "${var.tag_name_prefix}-Sec-az2"
+    Name = "${var.tag_name_prefix}-gwlb-Sec-az2"
   }
 }
 
@@ -601,7 +601,7 @@ resource "aws_vpc_endpoint" "gwlbendpoint1_1" {
   vpc_endpoint_type = aws_vpc_endpoint_service.fgtgwlbservice.service_type
   vpc_id            = aws_vpc.customer-vpc[count.index].id
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke1-az1"
+    Name = "${var.tag_name_prefix}-gwlb-Spoke1-az1"
   }
 }
 
@@ -612,7 +612,7 @@ resource "aws_vpc_endpoint" "gwlbendpoint1_2" {
   vpc_endpoint_type = aws_vpc_endpoint_service.fgtgwlbservice.service_type
   vpc_id            = aws_vpc.customer-vpc[count.index].id
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke1-az2"
+    Name = "${var.tag_name_prefix}-gwlb-Spoke1-az2"
   }
 }
 
@@ -624,7 +624,7 @@ resource "aws_vpc_endpoint" "gwlbendpoint2_1" {
   vpc_endpoint_type = aws_vpc_endpoint_service.fgtgwlbservice.service_type
   vpc_id            = aws_vpc.customer2-vpc[count.index].id
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke2-az1"
+    Name = "${var.tag_name_prefix}-gwlb-Spoke2-az1"
   }
 }
 
@@ -635,6 +635,6 @@ resource "aws_vpc_endpoint" "gwlbendpoint2_2" {
   vpc_endpoint_type = aws_vpc_endpoint_service.fgtgwlbservice.service_type
   vpc_id            = aws_vpc.customer2-vpc[count.index].id
   tags = {
-    Name = "${var.tag_name_prefix}-Spoke2-az2"
+    Name = "${var.tag_name_prefix}-gwlb-Spoke2-az2"
   }
 }

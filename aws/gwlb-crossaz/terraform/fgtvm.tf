@@ -1,40 +1,40 @@
 // FGTVM instance
 
 resource "aws_network_interface" "eth0" {
-  description = "fgt1-port1"
+  description = "${var.tag_name_prefix}-FortiGate - port1"
   subnet_id   = aws_subnet.publicsubnetaz1.id
-  private_ips       = [cidrhost(var.publiccidraz1, 10)]
+  private_ips = [cidrhost(var.publiccidraz1, 10)]
   tags = {
-    Name = "${var.tag_name_prefix} - fgt1 - port1"
+    Name = "${var.tag_name_prefix}-FortiGate - port1"
   }
 }
 
 resource "aws_network_interface" "eth1" {
-  description       = "fgt1-port2"
+  description       = "${var.tag_name_prefix}-FortiGate - port2"
   subnet_id         = aws_subnet.privatesubnetaz1.id
   private_ips       = [cidrhost(var.privatecidraz1, 10)]
   source_dest_check = false
   tags = {
-    Name = "${var.tag_name_prefix} - fgt1 - port2"
+    Name = "${var.tag_name_prefix}-FortiGate - port2"
   }
 }
 
 resource "aws_network_interface" "eth0-1" {
-  description = "fgt2-port1"
+  description = "${var.tag_name_prefix}-FortiGate2 - port1"
   subnet_id   = aws_subnet.publicsubnetaz2.id
   private_ips       = [cidrhost(var.publiccidraz2, 10)]
   tags = {
-    Name = "${var.tag_name_prefix} - fgt2 - port1"
+    Name = "${var.tag_name_prefix}-FortiGate2 - port1"
   }
 }
 
 resource "aws_network_interface" "eth1-1" {
-  description       = "fgt2-port2"
+  description       = "${var.tag_name_prefix}-FortiGate2 - port2"
   subnet_id         = aws_subnet.privatesubnetaz2.id
   private_ips       = [cidrhost(var.privatecidraz2, 10)]
   source_dest_check = false
   tags = {
-    Name = "${var.tag_name_prefix} - fgt2 - port2"
+    Name = "${var.tag_name_prefix}-FortiGate2 - port2"
   }
 }
 
@@ -47,8 +47,6 @@ data "aws_network_interface" "eth1" {
 data "aws_network_interface" "eth1-1" {
   id = aws_network_interface.eth1-1.id
 }
-
-
 
 //
 data "aws_network_interface" "vpcendpointip" {
@@ -69,13 +67,10 @@ data "aws_network_interface" "vpcendpointip" {
     name   = "availability-zone"
     values = ["${var.availability_zone1}"]
   }
-  tags = {
-    Name = "${var.tag_name_prefix} - GWLB - az1"
-  }
 }
 
 data "aws_network_interface" "vpcendpointipaz2" {
-  depends_on = [aws_vpc_endpoint.gwlbendpoint]
+  depends_on = [aws_vpc_endpoint.gwlbendpoint2]
   filter {
     name   = "vpc-id"
     values = ["${aws_vpc.fgtvm-vpc.id}"]
@@ -91,9 +86,6 @@ data "aws_network_interface" "vpcendpointipaz2" {
   filter {
     name   = "availability-zone"
     values = ["${var.availability_zone2}"]
-  }
-  tags = {
-    Name = "${var.tag_name_prefix} - GWLB - az2"
   }
 }
 
@@ -140,7 +132,7 @@ data "cloudinit_config" "config1" {
       fgt_data_ip = join("/", [element(tolist(aws_network_interface.eth1.private_ips), 0), cidrnetmask("${var.privatecidraz1}")])
       endpointip  = "${data.aws_network_interface.vpcendpointip.private_ip}"
       endpointip2 = "${data.aws_network_interface.vpcendpointipaz2.private_ip}"
-      hostname    = "${var.tag_name_prefix}-fgt1"
+      hostname    = "${var.tag_name_prefix}-FortiGate"
     })
   }
 
@@ -186,7 +178,7 @@ resource "aws_instance" "fgtvm" {
   }
 
   tags = {
-    Name = "${var.tag_name_prefix}-fgt1"
+    Name = "${var.tag_name_prefix}-FortiGate"
   }
 }
 
@@ -215,7 +207,7 @@ data "cloudinit_config" "config2" {
       fgt_data_ip = join("/", [element(tolist(aws_network_interface.eth1-1.private_ips), 0), cidrnetmask("${var.privatecidraz2}")])
       endpointip  = "${data.aws_network_interface.vpcendpointip.private_ip}"
       endpointip2 = "${data.aws_network_interface.vpcendpointipaz2.private_ip}"
-      hostname    = "${var.tag_name_prefix}-fgt2"
+      hostname    = "${var.tag_name_prefix}-FortiGate2"
     })
   }
 
@@ -261,7 +253,7 @@ resource "aws_instance" "fgtvm2" {
   }
 
   tags = {
-    Name = "${var.tag_name_prefix}-fgt2"
+    Name = "${var.tag_name_prefix}-FortiGate2"
   }
 }
 

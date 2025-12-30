@@ -27,24 +27,6 @@ resource "aws_subnet" "privatesubnetaz1" {
   }
 }
 
-resource "aws_subnet" "publicsubnetaz2" {
-  vpc_id            = aws_vpc.fgtvm-vpc.id
-  cidr_block        = var.publiccidraz2
-  availability_zone = var.availability_zone2
-  tags = {
-    Name = "${var.tag_name_prefix}-Sec-mgmt-az2"
-  }
-}
-
-resource "aws_subnet" "privatesubnetaz2" {
-  vpc_id            = aws_vpc.fgtvm-vpc.id
-  cidr_block        = var.privatecidraz2
-  availability_zone = var.availability_zone2
-  tags = {
-    Name = "${var.tag_name_prefix}-Sec-gwlb-az2"
-  }
-}
-
 // AWS VPC - Spoke
 resource "aws_vpc" "customer-vpc" {
   count                = var.spokeVpc ? 1 : 0

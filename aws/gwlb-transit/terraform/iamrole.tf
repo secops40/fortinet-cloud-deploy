@@ -103,7 +103,8 @@ resource "aws_s3_object" "conf" {
   })
 }
 
-# S3 Bucket config file for storing fgtvm1 config
+#
+# S3 Bucket config file for storing fgtvm2 config
 #
 resource "aws_s3_object" "conf2" {
   count  = var.bucket ? 1 : 0
@@ -114,8 +115,8 @@ resource "aws_s3_object" "conf2" {
     dst         = var.vpccidr
     data_gw     = cidrhost(var.privatecidraz2, 1)
     mgmt_gw     = cidrhost(var.publiccidraz2, 1)
-    fgt_mgmt_ip = join("/", [element(tolist(aws_network_interface.fgt2eth0.private_ips), 0), cidrnetmask("${var.publiccidraz1}")])
-    fgt_data_ip = join("/", [element(tolist(aws_network_interface.fgt2eth1.private_ips), 0), cidrnetmask("${var.privatecidraz1}")])
+    fgt_mgmt_ip = join("/", [element(tolist(aws_network_interface.fgt2eth0.private_ips), 0), cidrnetmask("${var.publiccidraz2}")])
+    fgt_data_ip = join("/", [element(tolist(aws_network_interface.fgt2eth1.private_ips), 0), cidrnetmask("${var.privatecidraz2}")])
     endpointip  = "${data.aws_network_interface.vpcendpointip.private_ip}"
     endpointip2 = "${data.aws_network_interface.vpcendpointip2.private_ip}"
     hostname    = "${var.tag_name_prefix}-fgt2"

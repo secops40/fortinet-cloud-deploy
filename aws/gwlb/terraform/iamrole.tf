@@ -74,16 +74,6 @@ resource "aws_s3_object" "lic1" {
   etag   = filemd5(var.licenses[0])
 }
 
-# S3 Bucket license file for BYOL License
-#
-resource "aws_s3_object" "lic2" {
-  count  = var.bucket ? 1 : 0
-  bucket = aws_s3_bucket.s3_bucket[0].id
-  key    = var.licenses[1]
-  source = var.licenses[1]
-  etag   = filemd5(var.licenses[1])
-}
-
 # S3 Bucket config file for storing fgtvm1 config
 #
 resource "aws_s3_object" "conf1" {
@@ -98,26 +88,6 @@ resource "aws_s3_object" "conf1" {
     fgt_mgmt_ip = join("/", [element(tolist(aws_network_interface.eth0.private_ips), 0), cidrnetmask("${var.publiccidraz1}")])
     fgt_data_ip = join("/", [element(tolist(aws_network_interface.eth1.private_ips), 0), cidrnetmask("${var.privatecidraz1}")])
     endpointip  = "${data.aws_network_interface.vpcendpointip.private_ip}"
-    endpointip2 = "${data.aws_network_interface.vpcendpointipaz2.private_ip}"
     hostname    = "${var.tag_name_prefix}-FortiGate"
-  })
-}
-
-# S3 Bucket config file for storing fgtvm1 config
-#
-resource "aws_s3_object" "conf2" {
-  count  = var.bucket ? 1 : 0
-  bucket = aws_s3_bucket.s3_bucket[0].id
-  key    = "${var.bootstrap-fgtvm}2"
-  content = templatefile("${var.bootstrap-fgtvm}", {
-    adminsport  = "${var.adminsport}"
-    dst         = var.vpccidr
-    data_gw     = cidrhost(var.privatecidraz2, 1)
-    mgmt_gw     = cidrhost(var.publiccidraz2, 1)
-    fgt_mgmt_ip = join("/", [element(tolist(aws_network_interface.eth0-1.private_ips), 0), cidrnetmask("${var.publiccidraz2}")])
-    fgt_data_ip = join("/", [element(tolist(aws_network_interface.eth1-1.private_ips), 0), cidrnetmask("${var.privatecidraz2}")])
-    endpointip  = "${data.aws_network_interface.vpcendpointip.private_ip}"
-    endpointip2 = "${data.aws_network_interface.vpcendpointipaz2.private_ip}"
-    hostname    = "${var.tag_name_prefix}-FortiGate2"
   })
 }

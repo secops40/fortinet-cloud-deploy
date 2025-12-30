@@ -10,20 +10,8 @@ output "FGT1_Password" {
   value = aws_instance.fgtvm.id
 }
 
-output "FGT2_PublicIP" {
-  value = aws_eip.FGTPublicIP2.public_ip
-}
-
-output "FGT2_Password" {
-  value = aws_instance.fgtvm2.id
-}
-
 output "GWLB_PrivateIP-az1" {
   value = data.aws_network_interface.vpcendpointip.private_ip
-}
-
-output "GWLB_PrivateIP-az2" {
-  value = data.aws_network_interface.vpcendpointipaz2.private_ip
 }
 
 output "GWLB_Endpoint_Service" {

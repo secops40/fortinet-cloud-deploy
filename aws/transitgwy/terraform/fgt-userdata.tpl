@@ -1,6 +1,7 @@
 config system global
 set hostname ${fgt_id}
 set timezone "Asia/Taipei"
+set admintimeout 300
 end
 config system interface
 edit port1                            

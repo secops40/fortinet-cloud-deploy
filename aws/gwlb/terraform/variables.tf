@@ -5,7 +5,7 @@ variable "secret_key" {}
 # Prefix for all resources created for this deployment in AWS
 variable "tag_name_prefix" {
   description = "Provide a common tag prefix value that will be used in the name tag for all resources"
-  default     = "GWLB-CROSSAZ"
+  default     = "GWLB"
 }
 
 // FortiGate VM version to deploy
@@ -65,13 +65,6 @@ variable "privatecidraz1" {
   default = "10.0.1.0/24"
 }
 
-variable "publiccidraz2" {
-  default = "10.0.10.0/24"
-}
-
-variable "privatecidraz2" {
-  default = "10.0.11.0/24"
-}
 
 // VPC for Spoke VPC
 variable "csvpccidr" {
