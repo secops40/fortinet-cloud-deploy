@@ -13,7 +13,7 @@
 ## Need to create 4 of them as our Security Groups are linked to a VPC
 
 resource "aws_security_group" "NSG-vpc-sec-ssh-icmp-https" {
-  name        = "${var.tag_name_prefix}-vpc_sec - All Open"
+  name        = "${var.tag_name_prefix}-Sec - All Open"
   description = "Allow All traffic"
   vpc_id      = aws_vpc.vpc_sec.id
 
@@ -33,7 +33,7 @@ resource "aws_security_group" "NSG-vpc-sec-ssh-icmp-https" {
   }
 
   tags = {
-    Name     = "${var.tag_name_prefix}-vpc_sec - All Open"
+    Name     = "${var.tag_name_prefix}-Sec - All Open"
   }
 }
 
@@ -42,7 +42,7 @@ resource "aws_security_group" "NSG-vpc-sec-ssh-icmp-https" {
 ##############################################################################################################
 # Create the IAM role/profile for the API Call
 resource "aws_iam_instance_profile" "APICall_profile" {
-  name = "FGT-${var.tag_name_prefix}-APICall_profile"
+  name = "${var.tag_name_prefix}-FortiGate"
   role = aws_iam_role.APICallrole.name
 }
 
@@ -50,7 +50,7 @@ resource "aws_iam_instance_profile" "APICall_profile" {
 #
 resource "aws_iam_instance_profile" "fortigate" {
   count = var.bucket ? 1 : 0
-  name  = "${var.tag_name_prefix}-fgtiamprofile"
+  name  = "${var.tag_name_prefix}-FortiGate-iamprofile"
 
   role = aws_iam_role.fortigate[0].name
 }
@@ -78,7 +78,7 @@ resource "aws_iam_role" "fortigate" {
 }
 
 resource "aws_iam_role" "APICallrole" {
-  name = "FGT-${var.tag_name_prefix}-APICall_role"
+  name = "${var.tag_name_prefix}-FortiGate-role"
 
   assume_role_policy = <<EOF
 {
@@ -179,7 +179,7 @@ resource "aws_network_interface" "eni-fgt1-data" {
   private_ips       = [cidrhost(var.security_vpc_data_subnet_cidr1, 10)]
   source_dest_check = false
   tags = {
-    Name = "${var.tag_name_prefix}-fgt1-enidata"
+    Name = "${var.tag_name_prefix}-FortiGate1 - data"
   }
 }
 
@@ -189,7 +189,7 @@ resource "aws_network_interface" "eni-fgt2-data" {
   private_ips       = [cidrhost(var.security_vpc_data_subnet_cidr2, 10)]
   source_dest_check = false
   tags = {
-    Name = "${var.tag_name_prefix}-fgt2-enidata"
+    Name = "${var.tag_name_prefix}-FortiGate2 - data"
   }
 }
 
@@ -199,7 +199,7 @@ resource "aws_network_interface" "eni-fgt1-hb" {
   private_ips       = [cidrhost(var.security_vpc_heartbeat_subnet_cidr1, 10)]
   source_dest_check = false
   tags = {
-    Name = "${var.tag_name_prefix}-fgt1-enihb"
+    Name = "${var.tag_name_prefix}-FortiGate1 - heartbeat"
   }
 }
 
@@ -209,7 +209,7 @@ resource "aws_network_interface" "eni-fgt2-hb" {
   private_ips       = [cidrhost(var.security_vpc_heartbeat_subnet_cidr2, 10)]
   source_dest_check = false
   tags = {
-    Name = "${var.tag_name_prefix}-fgt2-enihb"
+    Name = "${var.tag_name_prefix}-FortiGate2 - heartbeat"
   }
 }
 
@@ -219,7 +219,7 @@ resource "aws_network_interface" "eni-fgt1-mgmt" {
   private_ips       = [cidrhost(var.security_vpc_mgmt_subnet_cidr1, 10)]
   source_dest_check = false
   tags = {
-    Name = "${var.tag_name_prefix}-fgt1-enimgmt"
+    Name = "${var.tag_name_prefix}-FortiGate1 - mgmt"
   }
 }
 
@@ -229,7 +229,7 @@ resource "aws_network_interface" "eni-fgt2-mgmt" {
   private_ips       = [cidrhost(var.security_vpc_mgmt_subnet_cidr2, 10)]
   source_dest_check = false
   tags = {
-    Name = "${var.tag_name_prefix}-fgt2-enimgmt"
+    Name = "${var.tag_name_prefix}-FortiGate2 - mgmt"
   }
 }
 
@@ -239,7 +239,7 @@ resource "aws_eip" "eip-mgmt1" {
   domain            = "vpc"
   network_interface = aws_network_interface.eni-fgt1-mgmt.id
   tags = {
-    Name = "${var.tag_name_prefix}-fgt1-eip-mgmt"
+    Name = "${var.tag_name_prefix}-FortiGate1 - mgmt"
   }
 }
 
@@ -248,7 +248,7 @@ resource "aws_eip" "eip-mgmt2" {
   domain            = "vpc"
   network_interface = aws_network_interface.eni-fgt2-mgmt.id
   tags = {
-    Name = "${var.tag_name_prefix}-fgt2-eip-mgmt"
+    Name = "${var.tag_name_prefix}-FortiGate2 - mgmt"
   }
 }
 
@@ -257,7 +257,7 @@ resource "aws_eip" "eip-shared" {
   domain            = "vpc"
   network_interface = aws_network_interface.eni-fgt1-data.id
   tags = {
-    Name = "${var.tag_name_prefix}-eip-cluster"
+    Name = "${var.tag_name_prefix} - Cluster EIP"
   }
 }
 
@@ -270,8 +270,8 @@ data "cloudinit_config" "config" {
   part {
     filename     = "config"
     content_type = "text/x-shellscript"
-    content = templatefile("./fgt-userdata.tpl", {
-      fgt_id               = "FGT-Active"
+    content = templatefile("./fgtvm.conf", {
+      fgt_id               = "${var.tag_name_prefix}-FortiGate1"
       fgt_data_ip          = join("/", [element(tolist(aws_network_interface.eni-fgt1-data.private_ips), 0), cidrnetmask("${var.security_vpc_data_subnet_cidr1}")])
       fgt_heartbeat_ip     = join("/", [element(tolist(aws_network_interface.eni-fgt1-hb.private_ips), 0), cidrnetmask("${var.security_vpc_heartbeat_subnet_cidr1}")])
       fgt_mgmt_ip          = join("/", [element(tolist(aws_network_interface.eni-fgt1-mgmt.private_ips), 0), cidrnetmask("${var.security_vpc_mgmt_subnet_cidr1}")])
@@ -313,9 +313,15 @@ resource "aws_instance" "fgt1" {
   primary_network_interface {
     network_interface_id = aws_network_interface.eni-fgt1-data.id
   }
+  # 強制忽略此屬性的變更
+  lifecycle {
+    ignore_changes = [
+      source_dest_check
+    ]
+  }
 
   tags = {
-    Name = "${var.tag_name_prefix}-fgt1"
+    Name = "${var.tag_name_prefix}-FortiGate1"
   }
 }
 
@@ -340,8 +346,8 @@ data "cloudinit_config" "config2" {
   part {
     filename     = "config"
     content_type = "text/x-shellscript"
-    content = templatefile("./fgt-userdata.tpl", {
-      fgt_id               = "FGT-Passive"
+    content = templatefile("./fgtvm.conf", {
+      fgt_id               = "${var.tag_name_prefix}-FortiGate2"
       fgt_data_ip          = join("/", [element(tolist(aws_network_interface.eni-fgt2-data.private_ips), 0), cidrnetmask("${var.security_vpc_data_subnet_cidr2}")])
       fgt_heartbeat_ip     = join("/", [element(tolist(aws_network_interface.eni-fgt2-hb.private_ips), 0), cidrnetmask("${var.security_vpc_heartbeat_subnet_cidr2}")])
       fgt_mgmt_ip          = join("/", [element(tolist(aws_network_interface.eni-fgt2-mgmt.private_ips), 0), cidrnetmask("${var.security_vpc_mgmt_subnet_cidr2}")])
@@ -382,9 +388,15 @@ resource "aws_instance" "fgt2" {
   primary_network_interface {
     network_interface_id = aws_network_interface.eni-fgt2-data.id
   }
+  # 強制忽略此屬性的變更
+  lifecycle {
+    ignore_changes = [
+      source_dest_check
+    ]
+  }
 
   tags = {
-    Name = "${var.tag_name_prefix}-fgt2"
+    Name = "${var.tag_name_prefix}-FortiGate2"
   }
 }
 

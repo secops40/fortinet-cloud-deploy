@@ -6,7 +6,7 @@ resource "aws_ec2_transit_gateway" "TGW-XAZ" {
   default_route_table_association = "disable"
   default_route_table_propagation = "disable"
   tags = {
-    Name     = var.tag_name_prefix
+    Name = var.tag_name_prefix
   }
 }
 
@@ -15,7 +15,7 @@ resource "aws_ec2_transit_gateway_route_table" "TGW-VPC-SEC-rt" {
   depends_on         = [aws_ec2_transit_gateway.TGW-XAZ]
   transit_gateway_id = aws_ec2_transit_gateway.TGW-XAZ.id
   tags = {
-    Name     = "${var.tag_name_prefix}-VPC-SEC-RT"
+    Name     = "${var.tag_name_prefix}-Sec-rt"
   }
 }
 

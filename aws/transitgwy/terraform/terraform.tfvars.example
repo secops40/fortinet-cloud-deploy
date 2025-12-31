@@ -1,7 +1,6 @@
 // AWS Environment
 access_key = "<AWS access key>"
 secret_key = "<AWS secret key>"
-//token	   = "<AWS session token>"
 
 // Provide a common tag prefix value that will be used in the name tag for all resources
 // tag_name_prefix = ""
@@ -15,6 +14,9 @@ password = ""
 
 // FortiGate VM version to deploy
 fgt_version = "7.6.5"
+
+// Create SpokeVpc
+spokeVpc = "true"
 
 // Provide the region and availability zones to deploy the VPC in
 region = ""

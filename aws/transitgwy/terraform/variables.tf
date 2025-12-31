@@ -9,19 +9,11 @@
 variable "access_key" {}
 variable "secret_key" {}
 
-# Uncomment if using AWS SSO:
-# variable "token"      {}
-
 # Prefix for all resources created for this deployment in AWS
 variable "tag_name_prefix" {
   description = "Provide a common tag prefix value that will be used in the name tag for all resources"
   default     = "TGW"
 }
-
-#variable "tag_name_unique" {
-#  description = "Provide a unique tag prefix value that will be used in the name tag for each modules resources"
-#  default     = "terraform"
-#}
 
 //license files for the two fgts
 variable "licenses" {
@@ -70,6 +62,13 @@ variable "instance_type" {
   default     = "c6gn.xlarge"
 }
 
+// Create SpokeVpc
+// Either true or false
+variable "spokeVpc" {
+  type    = bool
+  default = "false"
+}
+
 #############################################################################################################
 #  AMI
 
@@ -94,10 +93,6 @@ data "aws_ami" "fgt_ami" {
     name   = "name"
     values = [local.fgtlocator[var.license_type][var.arch]]
   }
-}
-
-variable "scenario" {
-  default = "ha-tgw"
 }
 
 // password for FortiGate HA configuration
@@ -190,6 +185,39 @@ variable "security_vpc_relay_subnet_cidr2" {
   description = "Provide the network CIDR for the transit subnet2 in security vpc"
   default     = "10.0.102.0/24"
 }
+
+# spoke1 VPC
+variable "spoke_vpc1_cidr" {
+  description = "Provide the network CIDR for the VPC"
+  default     = "10.1.0.0/16"
+}
+
+variable "spoke_vpc1_private_subnet_cidr1" {
+  description = "Provide the network CIDR for the private subnet1 in spoke vpc1"
+  default     = "10.1.1.0/24"
+}
+
+variable "spoke_vpc1_private_subnet_cidr2" {
+  description = "Provide the network CIDR for the private subnet2 in spoke vpc1"
+  default     = "10.1.10.0/24"
+}
+
+# spoke2 VPC
+variable "spoke_vpc2_cidr" {
+  description = "Provide the network CIDR for the VPC"
+  default     = "10.2.0.0/16"
+}
+
+variable "spoke_vpc2_private_subnet_cidr1" {
+  description = "Provide the network CIDR for the private subnet1 in spoke vpc2"
+  default     = "10.2.1.0/24"
+}
+
+variable "spoke_vpc2_private_subnet_cidr2" {
+  description = "Provide the network CIDR for the private subnet2 in spoke vpc2"
+  default     = "10.2.10.0/24"
+}
+
 
 # References to your FortiGate
 variable "ami" {

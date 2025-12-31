@@ -33,6 +33,9 @@
     // FortiGate VM version to deploy
     fgt_version = "7.6.5"
 
+    // Create SpokeVpc
+    spokeVpc = "true"
+
     // Provide the region and availability zones to deploy the VPC in
     region = "us-west-1"
     availability_zone1 = "us-west-1a"
@@ -45,6 +48,11 @@
         ```
         // FortiGate VM version to deploy
         fgt_version = "7.6.5"
+        ```
+    * 若不建 Spoke Vpc
+        ```
+        // Create SpokeVpc
+        spokeVpc = "false"
         ```
 * 將 FortiGate **_license files_** 放置於專案目錄中.
 

@@ -31,7 +31,7 @@ resource "aws_s3_object" "conf" {
   count  = var.bucket ? 1 : 0
   bucket = aws_s3_bucket.s3_bucket[0].id
   key    = "./fgt-userdata.tpl"
-  content = templatefile("./fgt-userdata.tpl", {
+  content = templatefile("./fgtvm.conf", {
     fgt_id               = "FGT-Active"
     fgt_data_ip          = join("/", [element(tolist(aws_network_interface.eni-fgt1-data.private_ips), 0), cidrnetmask("${var.security_vpc_data_subnet_cidr1}")])
     fgt_heartbeat_ip     = join("/", [element(tolist(aws_network_interface.eni-fgt1-hb.private_ips), 0), cidrnetmask("${var.security_vpc_heartbeat_subnet_cidr1}")])
@@ -50,7 +50,7 @@ resource "aws_s3_object" "conf2" {
   count  = var.bucket ? 1 : 0
   bucket = aws_s3_bucket.s3_bucket[0].id
   key    = "./fgt-userdata2.tpl"
-  content = templatefile("./fgt-userdata.tpl", {
+  content = templatefile("./fgtvm.conf", {
     fgt_id               = "FGT-Passive"
     fgt_data_ip          = join("/", [element(tolist(aws_network_interface.eni-fgt2-data.private_ips), 0), cidrnetmask("${var.security_vpc_data_subnet_cidr2}")])
     fgt_heartbeat_ip     = join("/", [element(tolist(aws_network_interface.eni-fgt2-hb.private_ips), 0), cidrnetmask("${var.security_vpc_heartbeat_subnet_cidr2}")])

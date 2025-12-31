@@ -6,7 +6,7 @@ resource "aws_vpc" "vpc_sec" {
   enable_dns_support   = true
   enable_dns_hostnames = true
   tags = {
-    Name = "${var.tag_name_prefix}-vpc_sec"
+    Name = "${var.tag_name_prefix}-Sec"
   }
 }
 
@@ -14,7 +14,7 @@ resource "aws_vpc" "vpc_sec" {
 resource "aws_internet_gateway" "igw_sec" {
   vpc_id = aws_vpc.vpc_sec.id
   tags = {
-    Name = "${var.tag_name_prefix}-igw_sec"
+    Name = "${var.tag_name_prefix}-Sec-igw"
   }
 }
 
@@ -24,7 +24,7 @@ resource "aws_subnet" "data_subnet1" {
   cidr_block        = var.security_vpc_data_subnet_cidr1
   availability_zone = var.availability_zone1
   tags = {
-    Name = "${var.tag_name_prefix}-data-subnet1"
+    Name = "${var.tag_name_prefix}-Sec-data-az1"
   }
 }
 
@@ -33,7 +33,7 @@ resource "aws_subnet" "data_subnet2" {
   cidr_block        = var.security_vpc_data_subnet_cidr2
   availability_zone = var.availability_zone2
   tags = {
-    Name = "${var.tag_name_prefix}-data-subnet2"
+    Name = "${var.tag_name_prefix}-Sec-data-az2"
   }
 }
 
@@ -42,7 +42,7 @@ resource "aws_subnet" "heartbeat_subnet1" {
   cidr_block        = var.security_vpc_heartbeat_subnet_cidr1
   availability_zone = var.availability_zone1
   tags = {
-    Name = "${var.tag_name_prefix}-heartbeat-subnet1"
+    Name = "${var.tag_name_prefix}-Sec-heartbeat-az1"
   }
 }
 
@@ -51,7 +51,7 @@ resource "aws_subnet" "heartbeat_subnet2" {
   cidr_block        = var.security_vpc_heartbeat_subnet_cidr2
   availability_zone = var.availability_zone2
   tags = {
-    Name = "${var.tag_name_prefix}-heartbeat-subnet2"
+    Name = "${var.tag_name_prefix}-Sec-heartbeat-az2"
   }
 }
 
@@ -60,7 +60,7 @@ resource "aws_subnet" "mgmt_subnet1" {
   cidr_block        = var.security_vpc_mgmt_subnet_cidr1
   availability_zone = var.availability_zone1
   tags = {
-    Name = "${var.tag_name_prefix}-mgmt-subnet1"
+    Name = "${var.tag_name_prefix}-Sec-mgmt-az1"
   }
 }
 
@@ -69,7 +69,7 @@ resource "aws_subnet" "mgmt_subnet2" {
   cidr_block        = var.security_vpc_mgmt_subnet_cidr2
   availability_zone = var.availability_zone2
   tags = {
-    Name = "${var.tag_name_prefix}-mgmt-subnet2"
+    Name = "${var.tag_name_prefix}-Sec-mgmt-az2"
   }
 }
 
@@ -78,7 +78,7 @@ resource "aws_subnet" "relay_subnet1" {
   cidr_block        = var.security_vpc_relay_subnet_cidr1
   availability_zone = var.availability_zone1
   tags = {
-    Name = "${var.tag_name_prefix}-transit-subnet1"
+    Name = "${var.tag_name_prefix}-Sec-transit-az1"
   }
 }
 
@@ -87,7 +87,7 @@ resource "aws_subnet" "relay_subnet2" {
   cidr_block        = var.security_vpc_relay_subnet_cidr2
   availability_zone = var.availability_zone2
   tags = {
-    Name = "${var.tag_name_prefix}-transit-subnet2"
+    Name = "${var.tag_name_prefix}-Sec-transit-az2"
   }
 }
 
@@ -99,14 +99,14 @@ resource "aws_route_table" "data_rt" {
     gateway_id = aws_internet_gateway.igw_sec.id
   }
   tags = {
-    Name = "${var.tag_name_prefix}-data-and-mgmt-rt"
+    Name = "${var.tag_name_prefix}-Sec-data-and-mgmt-rt"
   }
 }
 
 resource "aws_route_table" "heartbeat_rt" {
   vpc_id = aws_vpc.vpc_sec.id
   tags = {
-    Name = "${var.tag_name_prefix}-heartbeat-rt"
+    Name = "${var.tag_name_prefix}-Sec-heartbeat-rt"
   }
 }
 
@@ -117,7 +117,7 @@ resource "aws_route_table" "relay_rt" {
     network_interface_id = aws_network_interface.eni-fgt1-data.id
   }
   tags = {
-    Name = "${var.tag_name_prefix}-transit-rt"
+    Name = "${var.tag_name_prefix}-Sec-transit-rt"
   }
 }
 
@@ -160,7 +160,7 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "tgw-att-vpc-sec" {
   transit_gateway_default_route_table_association = false
   transit_gateway_default_route_table_propagation = false
   tags = {
-    Name     = "${var.tag_name_prefix}-att-vpc_sec"
+    Name     = "${var.tag_name_prefix}-att-Sec"
   }
   depends_on = [aws_ec2_transit_gateway.TGW-XAZ]
 }
@@ -185,6 +185,6 @@ resource "aws_vpc_endpoint" "s3-endpoint-fgtvm-vpc" {
 }
 POLICY
   tags = {
-    Name = "${var.tag_name_prefix}-fgtvm-endpoint-to-s3"
+    Name = "${var.tag_name_prefix}-Sec-endpoint-to-s3"
   }
 }
