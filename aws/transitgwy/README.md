@@ -108,22 +108,19 @@
     ```
     //access_key = "<AWS access key>"
     //secret_key = "<AWS secret key>"
-    //token    = "<AWS session token>"
     ```
 * 編輯 `providers.tf`
     ```
     provider "aws" {
-    #access_key = var.access_key
-    #secret_key = var.secret_key
-    region     = var.region
-    # Uncomment if using AWS SSO:
-    # token      = var.token
+        //access_key = var.access_key
+        //secret_key = var.secret_key
+        region     = var.region
     }
     ```
 * 編輯 `variables.tf`
     ```
-    #variable "access_key" {}
-    #variable "secret_key" {}
+    //variable "access_key" {}
+    //variable "secret_key" {}
     ```
 
 ## Terraform 部署
