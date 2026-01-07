@@ -95,6 +95,10 @@ data "aws_ami" "fgt_ami" {
   }
 }
 
+locals {
+  ami_id = data.aws_ami.fgt_ami.id
+}
+
 // password for FortiGate HA configuration
 variable "password" {
   default = "fortinet"

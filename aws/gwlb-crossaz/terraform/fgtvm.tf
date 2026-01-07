@@ -145,7 +145,8 @@ data "cloudinit_config" "config1" {
 
 resource "aws_instance" "fgtvm" {
   //it will use region, architect, and license type to decide which ami to use for deployment
-  ami               = data.aws_ami.fgt_ami.id
+  //ami               = data.aws_ami.fgt_ami.id
+  ami               = local.ami_id
   instance_type     = var.instance_type
   availability_zone = var.availability_zone1
   key_name          = var.keypair
@@ -220,7 +221,8 @@ data "cloudinit_config" "config2" {
 
 resource "aws_instance" "fgtvm2" {
   //it will use region, architect, and license type to decide which ami to use for deployment
-  ami               = data.aws_ami.fgt_ami.id
+  //ami               = data.aws_ami.fgt_ami.id
+  ami               = local.ami_id
   instance_type     = var.instance_type
   availability_zone = var.availability_zone2
   key_name          = var.keypair

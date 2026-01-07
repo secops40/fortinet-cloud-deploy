@@ -135,6 +135,10 @@ data "aws_ami" "fgt_ami" {
   }
 }
 
+locals {
+  ami_id = data.aws_ami.fgt_ami.id
+}
+
 //  Existing SSH Key on the AWS 
 variable "keypair" {
   default = "<AWS SSH KEY>"

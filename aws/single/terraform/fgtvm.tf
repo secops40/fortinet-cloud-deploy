@@ -1,48 +1,24 @@
 // FGTVM instance
 
 resource "aws_network_interface" "eth0" {
-  description = "${var.tag_name_prefix}-FortiGate - port1"
+  description = "${var.tag_name_prefix}-Fortigate - port1"
   subnet_id   = aws_subnet.publicsubnetaz1.id
   private_ips = [cidrhost(var.publiccidraz1, 10)]
   tags = {
-    Name = "${var.tag_name_prefix}-FortiGate - port1"
+    Name = "${var.tag_name_prefix}-Fortigate - port1"
   }
 }
 
 resource "aws_network_interface" "eth1" {
-  description       = "${var.tag_name_prefix}-FortiGate - port2"
+  description       = "${var.tag_name_prefix}-Fortigate -port2"
   subnet_id         = aws_subnet.privatesubnetaz1.id
   private_ips       = [cidrhost(var.privatecidraz1, 10)]
   source_dest_check = false
   tags = {
-    Name = "${var.tag_name_prefix}-FortiGate - port2"
+    Name = "${var.tag_name_prefix}-Fortigate - port2"
   }
 }
 
-data "aws_network_interface" "eth1" {
-  id = aws_network_interface.eth1.id
-}
-
-//
-data "aws_network_interface" "vpcendpointip" {
-  depends_on = [aws_vpc_endpoint.gwlbendpoint]
-  filter {
-    name   = "vpc-id"
-    values = ["${aws_vpc.fgtvm-vpc.id}"]
-  }
-  filter {
-    name   = "status"
-    values = ["in-use"]
-  }
-  filter {
-    name   = "description"
-    values = ["*ELB*"]
-  }
-  filter {
-    name   = "availability-zone"
-    values = ["${var.availability_zone1}"]
-  }
-}
 
 resource "aws_network_interface_sg_attachment" "publicattachment" {
   depends_on           = [aws_network_interface.eth0]
@@ -57,7 +33,7 @@ resource "aws_network_interface_sg_attachment" "internalattachment" {
 }
 
 # Cloudinit config in MIME format
-data "cloudinit_config" "config1" {
+data "cloudinit_config" "config" {
   gzip          = false
   base64_encode = false
 
@@ -66,21 +42,20 @@ data "cloudinit_config" "config1" {
     filename     = "config"
     content_type = "text/x-shellscript"
     content = templatefile("${var.bootstrap-fgtvm}", {
-      adminsport  = "${var.adminsport}"
-      dst         = var.vpccidr
-      data_gw     = cidrhost(var.privatecidraz1, 1)
-      mgmt_gw     = cidrhost(var.publiccidraz1, 1)
-      fgt_mgmt_ip = join("/", [element(tolist(aws_network_interface.eth0.private_ips), 0), cidrnetmask("${var.publiccidraz1}")])
-      fgt_data_ip = join("/", [element(tolist(aws_network_interface.eth1.private_ips), 0), cidrnetmask("${var.privatecidraz1}")])
-      endpointip  = "${data.aws_network_interface.vpcendpointip.private_ip}"
-      hostname    = "${var.tag_name_prefix}-FortiGate"
+      adminsport     = var.adminsport
+      fgt_public_ip  = join("/", [element(tolist(aws_network_interface.eth0.private_ips), 0), cidrnetmask("${var.publiccidraz1}")])
+      fgt_private_ip = join("/", [element(tolist(aws_network_interface.eth1.private_ips), 0), cidrnetmask("${var.privatecidraz1}")])
+      dst            = var.vpccidr
+      private_gw     = cidrhost(var.privatecidraz1, 1)
+      public_gw      = cidrhost(var.publiccidraz1, 1)
+      hostname       = "${var.tag_name_prefix}-Fortigate"
     })
   }
 
   part {
     filename     = "license"
     content_type = "text/plain"
-    content      = var.license_format == "token" ? "LICENSE-TOKEN:${chomp(file("${var.licenses[0]}"))}" : "${file("${var.licenses[0]}")}"
+    content      = var.license_format == "token" ? "LICENSE-TOKEN:${chomp(file("${var.license}"))} INTERVAL:4 COUNT:4" : "${file("${var.license}")}"
   }
 }
 
@@ -94,13 +69,13 @@ resource "aws_instance" "fgtvm" {
 
   user_data = var.bucket ? (var.license_format == "file" ? "${jsonencode({ bucket = aws_s3_bucket.s3_bucket[0].id,
     region                        = var.region,
-    license                       = var.licenses[0],
+    license                       = var.license,
     config                        = "${var.bootstrap-fgtvm}"
     })}" : "${jsonencode({ bucket = aws_s3_bucket.s3_bucket[0].id,
     region                        = var.region,
-    license-token                 = file("${var.licenses[0]}"),
+    license-token                 = file("${var.license}"),
     config                        = "${var.bootstrap-fgtvm}"
-  })}") : "${data.cloudinit_config.config1.rendered}"
+  })}") : "${data.cloudinit_config.config.rendered}"
 
   iam_instance_profile = var.bucket ? aws_iam_instance_profile.fortigate[0].id : ""
 
@@ -120,7 +95,7 @@ resource "aws_instance" "fgtvm" {
   }
 
   tags = {
-    Name = "${var.tag_name_prefix}-FortiGate"
+    Name = "${var.tag_name_prefix}-Fortigate"
   }
 }
 

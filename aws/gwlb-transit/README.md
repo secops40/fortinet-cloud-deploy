@@ -110,27 +110,34 @@ A Scalable FortiGate Architecture for North–South and East-West Inspection usi
    }
    ```
 * 設定 Subnet 網段 CIDR (依需求調整)
-  ```
-  // VPC for FortiGate Security VPC
-  variable "vpccidr" {
-    default = "10.0.0.0/16"
-  }
+   ```
+   // VPC for FortiGate Security VPC
+   variable "vpccidr" {
+      default = "10.0.0.0/16"
+   }
 
-  ...
+   ...
 
-  // VPC for Spoke1 VPC
-  variable "csvpccidr" {
-    default = "10.1.0.0/16"
-  }
+   // VPC for Spoke1 VPC
+   variable "csvpccidr" {
+      default = "10.1.0.0/16"
+   }
 
-  ...
+   ...
 
 
-  // VPC for Spoke2 VPC
-  variable "cs2vpccidr" {
-    default = "10.2.0.0/16"
-  }
-  ```
+   // VPC for Spoke2 VPC
+   variable "cs2vpccidr" {
+      default = "10.2.0.0/16"
+   }
+   ```
+* 指定 AMI Id (用於指定舊版 FortiGate Version)
+   ```
+   locals {
+   //ami_id = data.aws_ami.fgt_ami.id
+   ami_id = "<ami_id>"
+   }
+   ```
 
 ## 使用 IAM Role / Instance Profile (不使用 Access Key)
 * 將 access_key 與 secret_key 設定註解掉。

@@ -9,6 +9,7 @@
 
 目前支援的平台：
 - [aws](./aws/):
+   - [AWS Single-AZ VPC (Standalone FortiGate)](./aws/single/)
    - [AWS Transit Gateway (FortiGate A-P HA)](./aws/transitgwy/)
    - AWS GWLB FortiGate Centralized North-South Inspection
       - [FortiGate Single-AZ](./aws/gwlb/)

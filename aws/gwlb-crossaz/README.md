@@ -129,6 +129,13 @@ A Scalable FortiGate Architecture for North–South Inspection using AWS GWLB (C
    ...
 
    ```
+* 指定 AMI Id (用於指定舊版 FortiGate Version)
+   ```
+   locals {
+   //ami_id = data.aws_ami.fgt_ami.id
+   ami_id = "<ami_id>"
+   }
+   ```
 
 ## 使用 IAM Role / Instance Profile (不使用 Access Key)
 * 將 access_key 與 secret_key 設定註解掉。
