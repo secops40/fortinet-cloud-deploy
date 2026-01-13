@@ -106,7 +106,7 @@ variable "arch" {
 // c6g.xlarge is arm
 // For detail, refer to https://aws.amazon.com/ec2/instance-types/
 variable "instance_type" {
-  default = "c6gn.xlarge"
+  default = "c6g.xlarge"
 }
 
 #############################################################################################################

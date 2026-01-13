@@ -106,7 +106,7 @@ A Scalable FortiGate Architecture for North–South and East-West Inspection usi
    // For detail, refer to https://aws.amazon.com/ec2/instance-types/
    variable "instance_type" {
       description = "Provide the instance type for the FortiGate instances"
-      default     = "c6gn.xlarge"
+      default     = "c6g.xlarge"
    }
    ```
 * 設定 Subnet 網段 CIDR (依需求調整)
