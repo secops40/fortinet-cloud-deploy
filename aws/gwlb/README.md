@@ -86,6 +86,7 @@ A simplified FortiGate architecture for North–South traffic inspection using A
       spokeVpc = "false"
       ```
 * 將 FortiGate **_license files_** 放置於專案目錄中.
+* 若使用 `payg`, 請將 license files 設為空白檔案.
 
 ### 修改 variables.tf 參數 (Optional)
 * 授權格式 `license_format` 可選擇以下兩種：

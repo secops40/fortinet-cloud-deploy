@@ -37,7 +37,8 @@
         // FortiGate VM version to deploy
         fgt_version = "7.6.5"
         ```
-* 將 FortiGate **_license files_** 放置於專案目錄中.
+* 將 FortiGate **_license file_** 放置於專案目錄中.
+* 若使用 `payg`, 請將 license file 設為空白檔案.
 
 ### 修改 variables.tf 參數 (Optional)
 * 授權格式 `license_format` 可選擇以下兩種：
