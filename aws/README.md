@@ -43,6 +43,10 @@
     ```
 
 ## 💡重要技術提示 (Tips) 
+### 查看目前 Marketplace 支援的 FortiGate Version
+1. 連至 [Marketplace](https://aws.amazon.com/marketplace/pp/prodview-wory773oau6wq?applicationId=AWSMPContessa)，頁面往下捲動至 "Usage information" 查看
+![alt text](./transitgwy/images/FGT_Marketplace.png)
+
 ### CloudShell 環境持久性說明
 1. Terraform 程式: CloudShell 的系統環境在每次 Session 結束（或閒置過久）後會重置，這會導致 /usr/bin/terraform 消失。若發現無法執行 terraform，請重新執行下列指令，即可快速恢復環境:
     ```
