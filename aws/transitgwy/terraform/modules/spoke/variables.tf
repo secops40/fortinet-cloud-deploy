@@ -58,3 +58,7 @@ variable "transit_gateway_route_table_id" {
   type        = string
 }
 
+variable "sec_vpc_route_table_id" {
+  description = "Security VPC Data and Mgmt Route Table ID"
+  type        = string
+}

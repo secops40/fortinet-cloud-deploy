@@ -183,7 +183,7 @@ Transit Gateway 與現有 Spoke VPC 整合
     * 路由 (Routes)
         * 不需手動設定, aws 會自動生成
 ### VPC Route Tables
-1. 修改 Security VPC Route Table: **_<tag_name_prefix>-TGW-terraform-data-and-mgmt-rt_**
+1. 修改 Security VPC Route Table: **_<tag_name_prefix>-data-and-mgmt-rt_**
     ![](./images/vpc_route-sec_data_mgmt.png)
     * `10.1.0.0/24` → 指向 Transit Gateway
     * `10.2.0.0/24` → 指向 Transit Gateway

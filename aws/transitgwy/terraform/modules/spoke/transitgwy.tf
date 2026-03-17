@@ -36,3 +36,16 @@ resource "aws_ec2_transit_gateway_route_table_propagation" "tgw-rt-prp-vpc2" {
   transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.tgw-att-spoke-vpc2.id
   transit_gateway_route_table_id = var.transit_gateway_route_table_id
 }
+
+resource "aws_route" "sec_to_spoke1_route" {
+  route_table_id         = var.sec_vpc_route_table_id
+  destination_cidr_block = var.spoke_vpc1_cidr
+  transit_gateway_id     = var.tgw_id
+}
+
+resource "aws_route" "sec_to_spoke2_route" {
+  route_table_id         = var.sec_vpc_route_table_id
+  destination_cidr_block = var.spoke_vpc2_cidr
+  transit_gateway_id     = var.tgw_id
+}
+

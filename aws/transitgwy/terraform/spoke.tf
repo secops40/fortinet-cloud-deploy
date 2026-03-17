@@ -15,5 +15,6 @@ module "spoke" {
   tgw_id                          = aws_ec2_transit_gateway.TGW-XAZ.id
   vpc_attachment_sec_id           = aws_ec2_transit_gateway_vpc_attachment.tgw-att-vpc-sec.id
   transit_gateway_route_table_id  = aws_ec2_transit_gateway_route_table.TGW-VPC-SEC-rt.id
+  sec_vpc_route_table_id          = aws_route_table.data_rt.id
 }
 
