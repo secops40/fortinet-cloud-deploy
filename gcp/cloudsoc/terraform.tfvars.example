@@ -1,0 +1,66 @@
+# Copy this file to terraform.tfvars and fill in your values.
+
+# ── Required ─────────────────────────────────────────────────────
+project_id = "my-gcp-project-id"
+prefix     = "test"
+
+# ── Region / Zones ───────────────────────────────────────────────
+# region         = "asia-east1"                          # default
+# zones_override = ["asia-east1-a", "asia-east1-b"]     # default derived from region
+
+# ── Networking ───────────────────────────────────────────────────
+# ip_block = "10.0.0.0/16"   # → zone-a subnet: 10.0.1.0/24, zone-b: 10.0.2.0/24
+# vpc_mtu  = 1500             # 1500 (default) | 1460 (VPN/GRE tunnel) | up to 8896 (jumbo)
+
+# management_source_ips = [
+#   "123.51.251.120/32",
+#   "60.250.130.67/32",
+#   "60.250.130.70/32",
+#   "123.51.251.127/32",
+#   "111.185.24.12/32",
+# ]
+
+# HTTPS（TCP 443）來源，預設不開放（[]）。如需開放請取消註解並填入 CIDR：
+# https_source_ips = ["0.0.0.0/0"]   # 全開
+# https_source_ips = ["1.2.3.4/32"]  # 指定來源
+
+# ── Instance Protection ───────────────────────────────────────────
+# deletion_protection = false   # set true in prod to prevent accidental destroy
+
+# ── FortiSIEM ────────────────────────────────────────────────────
+fsm_count = 1   # 1–4 instances; distributed across 2 zones
+
+# fsm_image             = "fortisiem-gcp-7-5-1-0620"
+# fsm_image_project     = ""            # empty = same project as project_id
+# fsm_machine_type      = "n2-standard-8"
+# fsm_boot_disk_type    = "pd-balanced"      # boot disk type
+# fsm_opt_disk_type     = "pd-balanced" # /opt  (Disk 2, 100 GB)
+# fsm_svn_disk_type     = "pd-balanced" # /svn  (Disk 3,  60 GB)
+# fsm_cmdb_disk_type    = "pd-balanced" # /cmdb (Disk 4,  60 GB)
+# fsm_data_disk_type    = "pd-ssd"      # /data (Disk 5, configurable)
+# fsm_disk5_size_gb     = 60            # /data disk minimum 60 GB
+
+# SPOT (optional)
+# fsm_use_spot                = false
+# fsm_spot_termination_action = "STOP"  # STOP | DELETE
+
+# ── FortiSOAR ────────────────────────────────────────────────────
+# fsr_image             = "fortisoar-vmware-8-0-0-6034"   # Machine Image name
+# fsr_image_project     = ""
+# fsr_machine_type      = "n2-standard-8"
+
+# SPOT (optional)
+# fsr_use_spot                = false
+# fsr_spot_termination_action = "DELETE"  # DELETE | STOP
+
+# ── SSH Keys ─────────────────────────────────────────────────────
+# FortiSIEM: 必填。username 填你的帳號（查詢：gcloud config get-value account | cut -d@ -f1）ex: hlinda
+fsm_ssh_keys = [
+  "yourusername:ssh-rsa AAAA... your-key-comment",
+]
+
+# FortiSOAR: 選填，若設定 username 必須是 csadmin
+# 注意：Machine Image 建立的 instance SSH key 注入可能不生效，建議用預設密碼 changeme 登入
+# fsr_ssh_keys = [
+#   "csadmin:ssh-rsa AAAA... your-key-comment",
+# ]

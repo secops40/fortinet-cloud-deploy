@@ -15,3 +15,5 @@
       - [FortiGate Single-AZ](./aws/gwlb/)
       - [FortiGate Cross-AZ](./aws/gwlb-crossaz/)
    - [AWS Transit Gateway + GWLB (FortiGate Cross-AZ Centralized North-South and East-West Inspection)](./aws/gwlb-transit/)
+- [gcp](./gcp/):
+   - [Cloud SOC](./gcp/cloudsoc/): 支援 FortiSIEM + FortiSOAR 快速建置
