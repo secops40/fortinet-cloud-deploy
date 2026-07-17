@@ -12,10 +12,9 @@
 
 ## FortiSIEM — 匯入 GCP Image
 
-FortiSIEM 使用標準 GCP Image，由 Fortinet 官方提供匯入步驟。
+FortiSIEM 使用標準 GCP Image，匯入前請先將 Fortinet 提供的 ZIP 檔解壓縮，並使用其中的 .tar.gz 檔進行後續匯入。
 
 請參閱官方文件：
-
 > **[Import FortiSIEM GCP Image into Google Cloud Image](https://docs.fortinet.com/document/fortisiem/7.5.1/google-cloud-platform-gcp-installation-guide/131018/fresh-installation#Import)**
 
 匯入完成後，記下 Image 名稱（例如 `fortisiem-gcp-7-5-1-0620`），填入 `terraform.tfvars`：
@@ -37,12 +36,32 @@ gcloud compute images list --filter="name~fortisiem" --no-standard-images
 
 FortiSOAR 使用 GCP **Machine Image**（從 OVA 檔案匯入），需先將 OVA 上傳至 Google Cloud Storage，再透過 `gcloud compute migration` 工具匯入。
 
+### Prerequisites
+1. 授予 VM Migration 服務帳戶 Storage 讀取權限: <br />
+    Machine Image 匯入過程需要從 Cloud Storage 讀取 OVA 檔案，因此必須授予 VM Migration Service Agent Storage Object Viewer 權限。
+    ```
+    PROJECT_ID="<your-project-id>"
+    BUCKET="<your-bucket>" 
+    PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projectNumber)")
+
+    gcloud storage buckets add-iam-policy-binding "gs://${BUCKET}" --member=serviceAccount:service-${PROJECT_NUMBER}@gcp-sa-vmmigration.iam.gserviceaccount.com --role=roles/storage.objectViewer
+    ```
+2. 確認有至少一個 VPC Network 存在: <br />
+    Machine Image 匯入期間，GCP 會建立暫存虛擬機。因此，專案內至少需要一組可用的 VPC Network，且 `subnet-mode` 為 `auto`，以自動在各個區域建立 Subnet。<br />
+    若專案內沒有合適的 VPC Network，可建立一組僅供 Machine Image 匯入使用的隔離網路：
+    ```
+    gcloud compute networks create "default" \ 
+    --subnet-mode="auto" \ 
+    --mtu="1500" \ 
+    --description="Isolated VPC for machine image migration only" \ 
+    --bgp-routing-mode="regional"
+    ```
+
 ### Step 1：匯入
 
 ```bash
 gcloud compute migration machine-image-imports create fortisoar-vmware-8-0-0-6034 \
   --source-file=gs://<your-bucket>/fortisoar-vmware-enterprise-8.0.0-6034.ova \
-  --os=rocky-9 \
   --labels="keep_resource=true" \
   --description="FortiSOAR 8.0.0"
 ```

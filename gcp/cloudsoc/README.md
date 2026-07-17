@@ -27,7 +27,7 @@
 | **GCP Image** | **FortiSIEM / FortiSOAR Image 需事先匯入 GCP 專案，或可從指定 `image_project` 存取** |
 
 > **注意：** GCP Image 必須在部署前確認已存在且可存取，否則 `terraform apply` 將會失敗。
-> 匯入方式請參閱 [IMPORT_IMAGES.md](IMPORT_IMAGES.md)；如有問題，請洽 **Support SE**。
+> 匯入方式請參閱 [IMPORT IMAGES](IMPORT_IMAGES.md)；如有問題，請洽 **Support SE**。
 
 ---
 
@@ -38,7 +38,7 @@
 cp terraform.tfvars.example terraform.tfvars
 
 # 2. 編輯 terraform.tfvars，至少填入必填欄位
-#    project_id、prefix、ssh_public_keys（或確認不需要 key）
+#    project_id、prefix、ssh_public_keys
 
 # 3. 初始化並部署
 terraform init
