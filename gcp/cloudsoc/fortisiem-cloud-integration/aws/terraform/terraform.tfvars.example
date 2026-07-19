@@ -1,0 +1,14 @@
+# [Required] Resource naming prefix (Cannot be empty)
+prefix = "fortisiem"
+
+# [Optional] AWS Region (Default: ap-east-2)
+region = "ap-east-2"
+
+# [Optional] Enable KMS encryption for S3 (Default: false)
+enable_kms = false
+
+# [Optional] S3 log retention days. 0 = infinite (Default: 0)
+log_retention_days = 0
+
+# [Optional] Allow FortiSIEM global read permissions for other resource integrations (Default: false)
+expand_user_permission = false

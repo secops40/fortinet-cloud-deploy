@@ -1,0 +1,95 @@
+<!-- Linda's GuardDuty sample log
+AWS_S3_LOG_GUARDDUTY:phCustId=1,reptDevIpAddr=98.87.170.71,reptDevName=amazon.com,msg={"accountId":"715841325120","arn":"arn:aws:guardduty:us-west-2:715841325120:detector/f6ca479de27b1d190d96bda499f49089/finding/b8cfb59ef28dd4c5ad691769d2cdb2b2","createdAt":"2026-07-16T14:04:06.299Z","description":"The IAM identity AWSReservedSSO_AdministratorAccess_d95f1e53229b321e (AssumedRole:AROA2NK3XZBAFXNTZVCOY:hlinda@fortinet.com) invoked the following APIs:\n- guardduty.amazonaws.com: ListMembers, ListPublishingDestinations, CreateSampleFindings, GetInvitationsCount completed without error.\n- sqs.amazonaws.com: CreateQueue completed without error.\n\nOne or more API calls were invoked from 60.250.130.70 located in Taiwan from Chunghwa Telecom (ASN=3462).","id":"b8cfb59ef28dd4c5ad691769d2cdb2b2","partition":"aws","region":"us-west-2","resource":{"accessKeyDetails":{"accessKeyId":"ASIA2NK3XZBAFZF5G4VW","principalId":"AROA2NK3XZBAFXNTZVCOY:hlinda@fortinet.com","userName":"AWSReservedSSO_AdministratorAccess_d95f1e53229b321e","userType":"AssumedRole"},"resourceType":"AccessKey"},"schemaVersion":"2.0","service":{"action":{"actionType":"AWS_API_CALL","awsApiCallAction":{"affectedResources":{},"api":"ListMembers","callerType":"Remote IP","remoteIpDetails":{"city":{"cityName":"Taipei"},"country":{"countryName":"Taiwan"},"geoLocation":{"lat":25.053,"lon":121.5259},"ipAddressV4":"60.250.130.70","organization":{"asn":"3462","asnOrg":"Data Communication Business Group","isp":"Chunghwa Telecom","org":"Chunghwa Telecom"}},"serviceName":"guardduty.amazonaws.com"}},"additionalInfo":{"anomalies":{"anomalousAPIs":"guardduty.amazonaws.com:[ListMembers:success , ListPublishingDestinations:success , CreateSampleFindings:success , GetInvitationsCount:success] , sqs.amazonaws.com:[CreateQueue:success]"},"profiledBehavior":{"frequentProfiledAPIsAccountProfiling":"DescribeInstances , PutEvaluations , DescribeTags , BatchGetResourceConfig , GetBucketLocation , GetSecretValue , ListTasks , CreateLogStream , RunTask , DeleteNetworkInterface","frequentProfiledAPIsUserIdentityProfiling":"","frequentProfiledASNsAccountProfiling":"asnNumber: 9919 asnOrg: New Century InfoComm Tech Co., Ltd. asnNumber: 3462 asnOrg: Data Communication Business Group asnNumber: 16509 asnOrg: Amazon.com, Inc. asnNumber: 14618 asnOrg: Amazon.com, Inc. asnNumber: 396982 asnOrg: Google LLC asnNumber: 65534 asnOrg: Amazon VPC Endpoint","frequentProfiledASNsUserIdentityProfiling":"","frequentProfiledUserAgentsAccountProfiling":"Botocore , aws-sdk-php , AWS Service , aws-sdk-go , aws-sdk-java , aws-sdk-go-v2","frequentProfiledUserAgentsUserIdentityProfiling":"","frequentProfiledUserNamesAccountProfiling":"fortiSIEM , AWSServiceRoleForConfig , AWSServiceRoleForSecurityHub , AWSServiceRoleForECS , forticnapp-dspm-scan-role-uswest2-a898 , BitSightCrossAccountRole , forticnapp-dspm-task-execution-role-a898 , forticnapp-dspm-eventbridge-role-uswest2-a898 , OrganizationAccountAccessRole , AWSServiceRoleForAccessAnalyzer","frequentProfiledUserTypesAccountProfiling":"ASSUMED_ROLE , IAM_USER","infrequentProfiledAPIsAccountProfiling":"","infrequentProfiledAPIsUserIdentityProfiling":"GetRole , DescribeRegions , ListNotificationHubs , GetSAMLProvider , GetSigninToken , ConsoleLogin , ListApplications , DescribeInstances , DescribeAddresses , DescribeSecurityGroups","infrequentProfiledASNsAccountProfiling":"asnNumber: 9416 asnOrg: Hoshin Multimedia Center Inc.","infrequentProfiledASNsUserIdentityProfiling":"asnNumber: 16509 asnOrg: Amazon.com, Inc. asnNumber: 3462 asnOrg: Data Communication Business Group asnNumber: 9416 asnOrg: Hoshin Multimedia Center Inc. asnNumber: 65534 asnOrg: Amazon VPC Endpoint","infrequentProfiledUserAgentsAccountProfiling":"browser , OTHER , AWS Internal , aws-cli","infrequentProfiledUserAgentsUserIdentityProfiling":"browser , OTHER , AWS Internal , AWS Service , aws-cli","infrequentProfiledUserNamesAccountProfiling":"","infrequentProfiledUserTypesAccountProfiling":"","rareProfiledAPIsAccountProfiling":"","rareProfiledAPIsUserIdentityProfiling":"","rareProfiledASNsAccountProfiling":"asnNumber: 6079 asnOrg: RCN asnNumber: 40934 asnOrg: Fortinet Inc.","rareProfiledASNsUserIdentityProfiling":"","rareProfiledUserAgentsAccountProfiling":"","rareProfiledUserAgentsUserIdentityProfiling":"aws-sdk-go-v2","rareProfiledUserNamesAccountProfiling":"","rareProfiledUserTypesAccountProfiling":""},"unusualBehavior":{"isUnusualUserIdentity":"false","unusualAPIsAccountProfiling":"","unusualAPIsUserIdentityProfiling":"","unusualASNsAccountProfiling":"","unusualASNsUserIdentityProfiling":"","unusualUserAgentsAccountProfiling":"","unusualUserAgentsUserIdentityProfiling":"","unusualUserNamesAccountProfiling":"","unusualUserTypesAccountProfiling":""},"userAgent":{"fullUserAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36","userAgentCategory":"browser"},"value":"{\"anomalies\":{\"anomalousAPIs\":\"guardduty.amazonaws.com:[ListMembers:success , ListPublishingDestinations:success , CreateSampleFindings:success , GetInvitationsCount:success] , sqs.amazonaws.com:[CreateQueue:success]\"},\"profiledBehavior\":{\"frequentProfiledAPIsAccountProfiling\":\"DescribeInstances , PutEvaluations , DescribeTags , BatchGetResourceConfig , GetBucketLocation , GetSecretValue , ListTasks , CreateLogStream , RunTask , DeleteNetworkInterface\",\"frequentProfiledAPIsUserIdentityProfiling\":\"\",\"frequentProfiledASNsAccountProfiling\":\"asnNumber: 9919 asnOrg: New Century InfoComm Tech Co., Ltd. asnNumber: 3462 asnOrg: Data Communication Business Group asnNumber: 16509 asnOrg: Amazon.com, Inc. asnNumber: 14618 asnOrg: Amazon.com, Inc. asnNumber: 396982 asnOrg: Google LLC asnNumber: 65534 asnOrg: Amazon VPC Endpoint\",\"frequentProfiledASNsUserIdentityProfiling\":\"\",\"frequentProfiledUserAgentsAccountProfiling\":\"Botocore , aws-sdk-php , AWS Service , aws-sdk-go , aws-sdk-java , aws-sdk-go-v2\",\"frequentProfiledUserAgentsUserIdentityProfiling\":\"\",\"frequentProfiledUserNamesAccountProfiling\":\"fortiSIEM , AWSServiceRoleForConfig , AWSServiceRoleForSecurityHub , AWSServiceRoleForECS , forticnapp-dspm-scan-role-uswest2-a898 , BitSightCrossAccountRole , forticnapp-dspm-task-execution-role-a898 , forticnapp-dspm-eventbridge-role-uswest2-a898 , OrganizationAccountAccessRole , AWSServiceRoleForAccessAnalyzer\",\"frequentProfiledUserTypesAccountProfiling\":\"ASSUMED_ROLE , IAM_USER\",\"infrequentProfiledAPIsAccountProfiling\":\"\",\"infrequentProfiledAPIsUserIdentityProfiling\":\"GetRole , DescribeRegions , ListNotificationHubs , GetSAMLProvider , GetSigninToken , ConsoleLogin , ListApplications , DescribeInstances , DescribeAddresses , DescribeSecurityGroups\",\"infrequentProfiledASNsAccountProfiling\":\"asnNumber: 9416 asnOrg: Hoshin Multimedia Center Inc.\",\"infrequentProfiledASNsUserIdentityProfiling\":\"asnNumber: 16509 asnOrg: Amazon.com, Inc. asnNumber: 3462 asnOrg: Data Communication Business Group asnNumber: 9416 asnOrg: Hoshin Multimedia Center Inc. asnNumber: 65534 asnOrg: Amazon VPC Endpoint\",\"infrequentProfiledUserAgentsAccountProfiling\":\"browser , OTHER , AWS Internal , aws-cli\",\"infrequentProfiledUserAgentsUserIdentityProfiling\":\"browser , OTHER , AWS Internal , AWS Service , aws-cli\",\"infrequentProfiledUserNamesAccountProfiling\":\"\",\"infrequentProfiledUserTypesAccountProfiling\":\"\",\"rareProfiledAPIsAccountProfiling\":\"\",\"rareProfiledAPIsUserIdentityProfiling\":\"\",\"rareProfiledASNsAccountProfiling\":\"asnNumber: 6079 asnOrg: RCN asnNumber: 40934 asnOrg: Fortinet Inc.\",\"rareProfiledASNsUserIdentityProfiling\":\"\",\"rareProfiledUserAgentsAccountProfiling\":\"\",\"rareProfiledUserAgentsUserIdentityProfiling\":\"aws-sdk-go-v2\",\"rareProfiledUserNamesAccountProfiling\":\"\",\"rareProfiledUserTypesAccountProfiling\":\"\"},\"unusualBehavior\":{\"isUnusualUserIdentity\":\"false\",\"unusualAPIsAccountProfiling\":\"\",\"unusualAPIsUserIdentityProfiling\":\"\",\"unusualASNsAccountProfiling\":\"\",\"unusualASNsUserIdentityProfiling\":\"\",\"unusualUserAgentsAccountProfiling\":\"\",\"unusualUserAgentsUserIdentityProfiling\":\"\",\"unusualUserNamesAccountProfiling\":\"\",\"unusualUserTypesAccountProfiling\":\"\"},\"userAgent\":{\"fullUserAgent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\",\"userAgentCategory\":\"browser\"}}","type":"default"},"archived":false,"count":50,"detectorId":"f6ca479de27b1d190d96bda499f49089","eventFirstSeen":"2026-07-16T13:40:56.000Z","eventLastSeen":"2026-07-16T13:51:39.000Z","featureName":"CloudTrailManagementEvent","resourceRole":"TARGET","serviceName":"guardduty"},"severity":2,"type":"Discovery:IAMUser/AnomalousBehavior","updatedAt":"2026-07-16T14:10:49.920Z","title":"The user AssumedRole : AWSReservedSSO_AdministratorAccess_d95f1e53229b321e is anomalously invoking APIs commonly used in Discovery tactics."}
+-->
+<patternDefinitions>
+<pattern name="patEpochSec"><![CDATA[\d{10}]]></pattern>
+</patternDefinitions>
+
+<eventFormatRecognizer><![CDATA[AWS_S3_LOG_GUARDDUTY]]></eventFormatRecognizer>
+<parsingInstructions>
+
+    <collectFieldsByRegex src="$_rawmsg">
+              
+        <regex><![CDATA[AWS_S3_LOG_GUARDDUTY:phCustId=<phCustId:gPatInt>,reptDevIpAddr=<reptDevIpAddr:gPatIpAddr>,reptDevName=<reptDevName:gPatStr>,msg=<_body:gPatMesgBody>]]></regex>
+            
+    </collectFieldsByRegex>
+             
+    <setEventAttribute attr="eventType">AWSS3-GUARDDUTY</setEventAttribute>
+	
+     
+    <collectAndSetAttrByJSON src="$_body">
+              
+        <attrKeyMap attr="accountId" key="accountId"/>
+              
+        <attrKeyMap attr="description" key="description"/>
+              
+        <attrKeyMap attr="awsRegion" key="region"/>
+              
+        <attrKeyMap attr="resourceType" key="resource.resourceType"/>
+
+        <attrKeyMap attr="_resourceRole" key="resource.resourceRole"/>		
+            
+		<attrKeyMap attr="serviceName" key="service.serviceName"/>		
+
+		<attrKeyMap attr="feature" key="service.featureName"/>
+
+        <attrKeyMap attr="_actionType" key="service.action.actionType"/>
+		
+		<attrKeyMap attr="_firstSeenTime" key="service.eventFirstSeen"/>
+
+		<attrKeyMap attr="_lastSeenTime" key="service.eventLastSeen"/>		
+              
+        <attrKeyMap attr="eventSeverity" key="severity"/>
+              
+        <attrKeyMap attr="type" key="type"/>
+              
+        <attrKeyMap attr="_updateTime" key="updatedAt"/>
+              
+        <attrKeyMap attr="title" key="title"/>
+           
+    </collectAndSetAttrByJSON>
+        
+      
+    <when test="exist type">
+              
+        <setEventAttribute attr="eventType">combineMsgId("AWS_GUARDDUTY-", $type)</setEventAttribute>
+            
+    </when>
+
+    <when test="exist _firstSeenTime">
+	
+      <collectFieldsByRegex src="$_firstSeenTime">
+              
+          <regex><![CDATA[<_year:gPatYear>-<_mon:gPatMonNum>-<_day:gPatDay>T<_time:gPatTime>.\d+Z]]></regex>
+            
+      </collectFieldsByRegex>
+        
+    <setEventAttribute attr="firstSeenTime">toDateTime($_mon, $_day, $_year, $_time)</setEventAttribute>
+
+    </when>
+
+    <when test="exist _lastSeenTime">
+	
+      <collectFieldsByRegex src="$_lastSeenTime">
+              
+          <regex><![CDATA[<_year:gPatYear>-<_mon:gPatMonNum>-<_day:gPatDay>T<_time:gPatTime>.\d+Z]]></regex>
+            
+      </collectFieldsByRegex>
+        
+    <setEventAttribute attr="lastSeenTime">toDateTime($_mon, $_day, $_year, $_time)</setEventAttribute>
+
+    </when>
+
+    <when test="exist _updateTime">
+	
+      <collectFieldsByRegex src="$_updateTime">
+              
+          <regex><![CDATA[<_year:gPatYear>-<_mon:gPatMonNum>-<_day:gPatDay>T<_time:gPatTime>.\d+Z]]></regex>
+            
+      </collectFieldsByRegex>
+        
+    <setEventAttribute attr="updateTime">toDateTime($_mon, $_day, $_year, $_time)</setEventAttribute>
+
+    </when>
+	
+</parsingInstructions>

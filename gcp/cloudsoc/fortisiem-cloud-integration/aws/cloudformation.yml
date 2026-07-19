@@ -1,0 +1,264 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Integrates AWS CloudTrail with FortiSIEM through Amazon SQS, with optional expanded permissions. Maintained by Linda.
+
+Parameters:
+  Prefix:
+    Type: String
+    MinLength: 1
+    AllowedPattern: '^[a-z0-9](?:[a-z0-9-]*[a-z0-9])$'
+    ConstraintDescription: "Prefix cannot be empty and must contain only lowercase letters, numbers, and hyphens."
+    Description: Resource naming prefix (Required)
+  EnableKMS:
+    Type: String
+    AllowedValues: ['true', 'false']
+    Default: 'false'
+    Description: Enable custom KMS Key encryption for S3? (Does not apply to SNS/SQS)
+  LogRetentionDays:
+    Type: Number
+    Default: 0
+    Description: S3 log retention days. 0 means no lifecycle deletion rule.
+  ExpandUserPermission:
+    Type: String
+    AllowedValues: ['true', 'false']
+    Default: 'false'
+    Description: Allow FortiSIEM global read permissions for other resource integrations
+    
+Conditions:
+  UseKMS: !Equals [!Ref EnableKMS, 'true']
+  HasLifecycleRule: !Not [!Equals [!Ref LogRetentionDays, 0]]
+  UseExpandedPermission: !Equals [!Ref ExpandUserPermission, 'true']
+
+Resources:
+  # --- KMS Key ---
+  FSKMSKey:
+    Type: AWS::KMS::Key
+    Condition: UseKMS
+    Properties:
+      Description: KMS Key for CloudTrail
+      EnableKeyRotation: true
+      KeyPolicy:
+        Version: '2012-10-17'
+        Id: key-default-1
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal: { AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root' }
+            Action: 'kms:*'
+            Resource: '*'
+          - Sid: Allow CloudTrail to encrypt logs
+            Effect: Allow
+            Principal: { Service: 'cloudtrail.amazonaws.com' }
+            Action: 'kms:GenerateDataKey*'
+            Resource: '*'
+            Condition:
+              StringLike: { 'kms:EncryptionContext:aws:cloudtrail:arn': !Sub 'arn:aws:cloudtrail:*:${AWS::AccountId}:trail/${Prefix}-cloudtrail' }
+  FSKMSAlias:
+    Type: AWS::KMS::Alias
+    Condition: UseKMS
+    Properties:
+      AliasName: !Sub 'alias/${Prefix}-cloudtrail'
+      TargetKeyId: !Ref FSKMSKey
+
+  # --- S3 Bucket ---
+  CTBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain 
+    Properties:
+      BucketName: !Sub '${Prefix}-cloudtrail-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: !If [UseKMS, 'aws:kms', 'AES256']
+              KMSMasterKeyID: !If [UseKMS, !Ref FSKMSKey, !Ref 'AWS::NoValue']
+      LifecycleConfiguration: !If
+        - HasLifecycleRule
+        - Rules:
+            - Id: AutoDeleteLogs
+              Status: Enabled
+              ExpirationInDays: !Ref LogRetentionDays
+        - !Ref AWS::NoValue
+
+  CTBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref CTBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AWSCloudTrailAclCheck
+            Effect: Allow
+            Principal: { Service: cloudtrail.amazonaws.com }
+            Action: s3:GetBucketAcl
+            Resource: !GetAtt CTBucket.Arn
+          - Sid: AWSCloudTrailWrite
+            Effect: Allow
+            Principal: { Service: cloudtrail.amazonaws.com }
+            Action: s3:PutObject
+            Resource: !Sub '${CTBucket.Arn}/AWSLogs/${AWS::AccountId}/*'
+            Condition:
+              StringEquals: { 's3:x-amz-acl': bucket-owner-full-control }
+
+  # --- SNS Topic ---
+  CTSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${Prefix}-cloudtrail-sns'
+
+  CTSNSTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics: [!Ref CTSNSTopic]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: cloudtrail.amazonaws.com }
+            Action: SNS:Publish
+            Resource: !Ref CTSNSTopic
+
+  # --- SQS Queue ---
+  CTSQSQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub '${Prefix}-cloudtrail-sqs'
+      MessageRetentionPeriod: 604800 
+
+  CTSQSQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues: [!Ref CTSQSQueue]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: sns.amazonaws.com }
+            Action: sqs:SendMessage
+            Resource: !GetAtt CTSQSQueue.Arn
+            Condition:
+              ArnEquals: { 'aws:SourceArn': !Ref CTSNSTopic }
+
+  SQSSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref CTSNSTopic
+      Protocol: sqs
+      Endpoint: !GetAtt CTSQSQueue.Arn
+
+  # --- CloudTrail ---
+  CTTrail:
+    Type: AWS::CloudTrail::Trail
+    DependsOn: [CTBucketPolicy, CTSNSTopicPolicy]
+    Properties:
+      TrailName: !Sub '${Prefix}-cloudtrail'
+      S3BucketName: !Ref CTBucket
+      SnsTopicName: !GetAtt CTSNSTopic.TopicName
+      IsLogging: true
+      IncludeGlobalServiceEvents: true
+      IsMultiRegionTrail: true
+      EnableLogFileValidation: true 
+      KMSKeyId: !If [UseKMS, !Ref FSKMSKey, !Ref 'AWS::NoValue']
+
+  # --- IAM User for FortiSIEM ---
+  FSIEMUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Sub '${Prefix}-user'
+      ManagedPolicyArns: !If
+        - UseExpandedPermission
+        - - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
+          - arn:aws:iam::aws:policy/AmazonRDSReadOnlyAccess
+          - arn:aws:iam::aws:policy/AWSSecurityHubReadOnlyAccess
+          - arn:aws:iam::aws:policy/CloudWatchReadOnlyAccess
+          - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+        - !Ref AWS::NoValue
+
+  FSIEMAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref FSIEMUser
+
+  # --- Core Policy ---
+  FSIEMCorePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub '${Prefix}-fortisiem-core-policy'
+      Users: [!Ref FSIEMUser]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: SQSPermissions
+            Effect: Allow
+            Action:
+              - 'sqs:GetQueueUrl'
+              - 'sqs:GetQueueAttributes'
+              - 'sqs:ReceiveMessage'
+              - 'sqs:DeleteMessage'
+              - 'sqs:ChangeMessageVisibility'
+            Resource: !GetAtt CTSQSQueue.Arn
+          - Sid: S3BucketPermissions
+            Effect: Allow
+            Action:
+              - 's3:Get*'
+              - 's3:List*'
+            Resource: !GetAtt CTBucket.Arn
+          - Sid: S3BucketObjectPermissions
+            Effect: Allow
+            Action:
+              - 's3:Get*'
+              - 's3:List*'
+            Resource: !Sub '${CTBucket.Arn}/*'
+          - !If
+            - UseKMS
+            - Effect: Allow
+              Action: ['kms:Decrypt']
+              Resource: !GetAtt FSKMSKey.Arn
+            - !Ref AWS::NoValue
+
+  # --- Extended Policy ---
+  FSIEMExtendedPolicy:
+    Type: AWS::IAM::Policy
+    Condition: UseExpandedPermission
+    Properties:
+      PolicyName: !Sub '${Prefix}-fortisiem-extended-policy'
+      Users: [!Ref FSIEMUser]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'sqs:List*'
+              - 'sqs:Get*'
+              - 'sqs:ChangeMessageVisibility'
+              - 'sqs:DeleteMessage'
+              - 'sqs:ReceiveMessage'
+              - 'sqs:PurgeQueue'
+            Resource: '*'
+          - Effect: Allow
+            Action: ['kms:Decrypt']
+            Resource: '*'
+
+Outputs:
+  FortiSIEMIAMUserName:
+    Description: "FortiSIEM: IAM User Name"
+    Value: !Ref FSIEMUser
+  FortiSIEMAccessKey:
+    Description: "FortiSIEM: Access Key"
+    Value: !Ref FSIEMAccessKey
+  FortiSIEMSecretKey:
+    Description: "FortiSIEM: Secret Key"
+    Value: !GetAtt FSIEMAccessKey.SecretAccessKey
+  FortiSIEMRegion:
+    Description: "FortiSIEM: SQS Region Name"
+    Value: !Ref AWS::Region
+  FortiSIEMS3Bucket:
+    Description: "FortiSIEM: S3 Bucket Name"
+    Value: !Ref CTBucket
+  FortiSIEMSQSQueueUrl:
+    Description: "FortiSIEM: SQS Queue URL"
+    Value: !Ref CTSQSQueue
