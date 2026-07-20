@@ -112,3 +112,17 @@ When configuring credentials and log collection in the FortiSIEM GUI, use the fo
 | **GuardDuty** | `Amazon AWS S3` | `AWS_S3_LOG_GUARDDUTY` |
 
 > **Note**: For VPC Flow Logs, replace `<REGION>` with your target AWS region (e.g., `AWS_S3_LOG_VPCFLOW-ap-east-2`)
+
+---
+
+## 7. Custom Parsers (Optional)
+
+The ![parser/](./parser/) directory in this repository contains custom parser configurations designed to handle specific AWS log formats. If required for your environment, you can manually add these to FortiSIEM.
+
+**To add a custom parser:**
+1. In the FortiSIEM GUI, navigate to **Admin > Device Support > Parsers**.
+2. Click **+** to create a new parser entry.
+3. Copy and paste the XML content from the respective file in the `parser/` directory into the parser configuration window.
+4. Click **Save** to apply the changes.
+5. Follow the configuration order and settings as shown in the below image.
+    ![](./images/AWS_Parsers_Order.png)
