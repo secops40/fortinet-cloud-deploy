@@ -1,0 +1,200 @@
+<!-- Linda's VPC flow sample log
+AWS_S3_LOG_VPCFLOW-us-west-2:phCustId=1,reptDevIpAddr=98.87.170.71,reptDevName=amazon.com,msg=2 715841325120 eni-03176cb3345a191dc 204.76.203.221 10.10.1.69 47426 6803 6 1 52 1783677961 1783677987 REJECT OK
+-->
+<patternDefinitions>
+<pattern name="patEpochSec"><![CDATA[\d{10}]]></pattern>
+</patternDefinitions>
+
+<eventFormatRecognizer><![CDATA[AWS_S3_LOG_VPCFLOW]]></eventFormatRecognizer>
+<parsingInstructions>
+
+    <collectFieldsByRegex src="$_rawmsg">
+              
+        <regex><![CDATA[AWS_S3_LOG_VPCFLOW(?:<_region:gPatStr>):phCustId=<phCustId:gPatInt>,reptDevIpAddr=<reptDevIpAddr:gPatIpAddr>,reptDevName=<reptDevName:gPatStr>,msg=(?=\d)<_body:gPatMesgBody>]]></regex>
+            
+    </collectFieldsByRegex>
+             
+    <setEventAttribute attr="eventType">AWSS3-VPC-Flow</setEventAttribute>
+	
+	<when test= "exist _region">
+	  <collectFieldsByRegex src="$_region">
+             <regex><![CDATA[-<awsRegion:gPatStr>]]></regex>
+      </collectFieldsByRegex>
+	</when>
+        
+    <!-- format defined in https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html#flow-logs-default -->
+        
+    <!-- log version can be 2,3,4,5 and position fields only exist for that version and lower -->
+        
+    <collectAndSetAttrByPos sep=" " src="$_body">
+              
+        <!-- Version 2 log fields -->
+              
+        <attrPosMap attr="version" pos="1"/>
+              
+        <attrPosMap attr="accountId" pos="2"/>
+              
+        <attrPosMap attr="intfName" pos="3"/>
+              
+        <attrPosMap attr="srcIpAddr" pos="4"/>
+              
+        <attrPosMap attr="destIpAddr" pos="5"/>
+              
+        <attrPosMap attr="srcIpPort" pos="6"/>
+              
+        <attrPosMap attr="destIpPort" pos="7"/>
+              
+        <attrPosMap attr="ipProto" pos="8"/>
+              
+        <attrPosMap attr="totPkts64" pos="9"/>
+              
+        <attrPosMap attr="totBytes64" pos="10"/>
+              
+        <attrPosMap attr="_startEpoch" pos="11"/>
+              
+        <attrPosMap attr="_endEpoch" pos="12"/>
+              
+        <attrPosMap attr="fwAction" pos="13"/>
+              
+        <attrPosMap attr="status" pos="14"/>
+            
+    </collectAndSetAttrByPos>
+        
+    <when test="$version IN '3,4,5'">
+              
+        <collectAndSetAttrByPos sep=" " src="$_body">
+                    
+            <!-- Version 3 log fields -->
+                    
+            <attrPosMap attr="vpcId" pos="15"/>
+                    
+            <attrPosMap attr="_subnetId" pos="16"/>
+                    
+            <!-- pending attribute subnetId -->
+                    
+            <attrPosMap attr="ec2InstanceId" pos="17"/>
+                    
+            <attrPosMap attr="tcpFlags" pos="18"/>
+                    
+            <attrPosMap attr="type" pos="19"/>
+                    
+            <attrPosMap attr="srcIpAddr" pos="20"/>
+                    
+            <attrPosMap attr="destIpAddr" pos="21"/>
+                  
+        </collectAndSetAttrByPos>
+            
+    </when>
+        
+    <when test="$version IN '4,5'">
+              
+        <collectAndSetAttrByPos sep=" " src="$_body">
+                    
+            <!-- Version 4 log fields -->
+                    
+            <attrPosMap attr="awsRegion" pos="22"/>
+                    
+            <attrPosMap attr="hostZoneUri" pos="23"/>
+                    
+            <!-- pending attribute availabilityZone -->
+                    
+            <attrPosMap attr="hostLocation" pos="24"/>
+                    
+            <!-- wavelength or outpost or localzone or - -->
+                    
+            <attrPosMap attr="_subLocationId" pos="25"/>
+                  
+        </collectAndSetAttrByPos>
+            
+    </when>
+        
+    <when test="$version IN '5'">
+              
+        <collectAndSetAttrByPos sep=" " src="$_body">
+                    
+            <!-- Version 5 log fields -->
+                    
+            <attrPosMap attr="serviceName" pos="26"/>
+                    
+            <attrPosMap attr="destServiceName" pos="27"/>
+                    
+            <attrPosMap attr="direction" pos="28"/>
+                    
+            <attrPosMap attr="_egressTrafficPath" pos="29"/>
+                    
+            <!-- only if traffic is egress -->
+                  
+        </collectAndSetAttrByPos>
+            
+    </when>
+        
+    <when test="exist fwAction">
+              
+        <choose>
+                    
+            <when test="$fwAction != '-'">
+                          
+                <setEventAttribute attr="eventType">combineMsgId("AWS_VPC_FLOW_", $fwAction)</setEventAttribute>
+                        
+            </when>
+                    
+            <otherwise>
+                          
+                <setEventAttribute attr="eventType">combineMsgId("AWS_VPC_FLOW_", $status)</setEventAttribute>
+                        
+            </otherwise>
+                  
+        </choose>
+              
+        <choose>
+                    
+            <when test="$fwAction = 'ACCEPT'">
+                          
+                <setEventAttribute attr="eventAction">0</setEventAttribute>
+                        
+            </when>
+                    
+            <when test="$fwAction = 'REJECT'">
+                          
+                <setEventAttribute attr="eventAction">1</setEventAttribute>
+                        
+            </when>
+                  
+        </choose>
+            
+    </when>
+        
+    <when test="exist _endEpoch">
+              
+        <setEventAttribute attr="_duration">calculateLatency($_endEpoch, $_startEpoch)</setEventAttribute>
+              
+        <setEventAttribute attr="durationMSec">scale($_duration, 1000)</setEventAttribute>
+            
+    </when>
+    
+	<when test="exist _startEpoch">
+      <switch>
+         <case>
+         <!-- timestamp in epoch millis convert to seconds -->
+           <collectFieldsByRegex src="$_startEpoch">
+             <regex><![CDATA[^<startTime:patEpochSec>]]></regex>
+           </collectFieldsByRegex>
+         </case>
+         <default/>
+      </switch>
+    </when>
+
+    <when test="exist _endEpoch">
+      <switch>
+        <case>
+          <!-- timestamp in epoch millis convert to seconds -->
+            <collectFieldsByRegex src="$_endEpoch">
+              <regex><![CDATA[^<endTime:patEpochSec>]]></regex>
+            </collectFieldsByRegex>
+			<setEventAttribute attr="deviceTime">$endTime</setEventAttribute>
+        </case>
+        <default/>
+      </switch>
+    </when>
+	
+</parsingInstructions>

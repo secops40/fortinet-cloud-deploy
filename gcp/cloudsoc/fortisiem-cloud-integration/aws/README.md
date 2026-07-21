@@ -45,6 +45,11 @@ terraform apply
     ```
 *(Type `yes` to confirm when prompted)*
 
+### Step 4: Get Secret Key
+```
+terraform output -json fortisiem_aws_secret_key
+```
+
 ### Cleanup
 To destroy all created resources:
 ```bash
