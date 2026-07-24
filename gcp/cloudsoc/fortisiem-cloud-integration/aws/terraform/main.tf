@@ -197,7 +197,7 @@ resource "aws_cloudtrail" "trail" {
 
 # --- IAM User ---
 resource "aws_iam_user" "fsiem_user" {
-  name = "${var.prefix}-fortisiem-user"
+  name = "${var.prefix}-user"
 }
 
 resource "aws_iam_access_key" "fsiem_key" {
@@ -209,8 +209,7 @@ locals {
     "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess",
     "arn:aws:iam::aws:policy/AmazonRDSReadOnlyAccess",
     "arn:aws:iam::aws:policy/AWSSecurityHubReadOnlyAccess",
-    "arn:aws:iam::aws:policy/CloudWatchReadOnlyAccess",
-    "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+    "arn:aws:iam::aws:policy/CloudWatchReadOnlyAccess"
   ]
 }
 
@@ -269,6 +268,14 @@ data "aws_iam_policy_document" "fsiem_policy_doc" {
         "sqs:ReceiveMessage",
         "sqs:PurgeQueue"
       ]
+      resources = ["*"]
+    }
+  }
+  dynamic "statement" {
+    for_each = var.expand_user_permission ? [1] : []
+    content {
+      effect    = "Allow"
+      actions   = ["s3:Get*", "s3:List*"]
       resources = ["*"]
     }
   }

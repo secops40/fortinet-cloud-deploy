@@ -175,7 +175,6 @@ Resources:
           - arn:aws:iam::aws:policy/AmazonRDSReadOnlyAccess
           - arn:aws:iam::aws:policy/AWSSecurityHubReadOnlyAccess
           - arn:aws:iam::aws:policy/CloudWatchReadOnlyAccess
-          - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
         - !Ref AWS::NoValue
 
   FSIEMAccessKey:
@@ -238,6 +237,11 @@ Resources:
               - 'sqs:DeleteMessage'
               - 'sqs:ReceiveMessage'
               - 'sqs:PurgeQueue'
+            Resource: '*'
+          - Effect: Allow
+            Action:
+              - 's3:Get*'
+              - 's3:List*'
             Resource: '*'
           - Effect: Allow
             Action: ['kms:Decrypt']
